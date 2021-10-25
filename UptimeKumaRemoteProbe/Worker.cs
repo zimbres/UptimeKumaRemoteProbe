@@ -1,5 +1,6 @@
 using System.Net.NetworkInformation;
 using UptimeKumaRemoteProbe.Models;
+using UptimeKumaRemoteProbe.Services;
 
 namespace UptimeKumaRemoteProbe;
 
@@ -7,15 +8,15 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IConfiguration _configuration;
-    private readonly HttpClient _httpClient;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly PingService _pingService;
+    private readonly HttpService _httpService;
 
-    public Worker(ILogger<Worker> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService)
     {
         _logger = logger;
         _configuration = configuration;
-        _httpClientFactory = httpClientFactory;
-        _httpClient = _httpClientFactory.CreateClient();
+        _pingService = pingService;
+        _httpService = httpService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,22 +35,19 @@ public class Worker : BackgroundService
 
             if (upReply is not null && upReply.Status == IPStatus.Success)
             {
-                foreach (var item in configurations.Services)
+                foreach (var item in configurations.Endpoints)
                 {
-                    PingReply pingReply = ping.Send(item.Destination, configurations.Timeout);
-
-                    if (pingReply.Status == IPStatus.Success)
+                    switch (item.Type)
                     {
-                        try
-                        {
-                            await _httpClient.GetAsync($"{item.PushUri}{pingReply.RoundtripTime}");
-                        }
-                        catch
-                        {
-                            _logger.LogError($"Error trying to push results to {item.PushUri} at: {DateTimeOffset.Now}");
-                        }
+                        case "Ping":
+                            await _pingService.CheckPing(item);
+                            break;
+                        case "Http":
+                            await _httpService.CheckHttp(item);
+                            break;
+                        default:
+                            break;
                     }
-                    _logger.LogWarning($"Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}");
                 }
             }
             await Task.Delay(configurations.Delay, stoppingToken);

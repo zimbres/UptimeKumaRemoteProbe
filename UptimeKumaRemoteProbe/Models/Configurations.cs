@@ -2,14 +2,18 @@
 
 public class Configurations
 {
-    public List<Services> Services { get; set; }
+    public List<Endpoint> Endpoints { get; set; }
     public string UpDependency { get; set; }
     public int Timeout { get; set; }
     public int Delay { get; set; }
 }
 
-public class Services
+public class Endpoint
 {
+    public string Type { get; set; }
     public Uri PushUri { get; set; }
     public string Destination { get; set; }
+    public string Keyword { get; set; }
+    public bool IgnoreSSL { get; set; }
+    public int Timeout { get; set; }
 }
