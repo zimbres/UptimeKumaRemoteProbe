@@ -34,20 +34,23 @@ public class Worker : BackgroundService
 
             if (upReply is not null && upReply.Status == IPStatus.Success)
             {
-                PingReply pingReply = ping.Send(configurations.Destination, configurations.Timeout);
-
-                if (pingReply.Status == IPStatus.Success)
+                foreach (var item in configurations.Services)
                 {
-                    try
+                    PingReply pingReply = ping.Send(item.Destination, configurations.Timeout);
+
+                    if (pingReply.Status == IPStatus.Success)
                     {
-                        await _httpClient.GetAsync($"{configurations.Uri}{pingReply.RoundtripTime}");
+                        try
+                        {
+                            await _httpClient.GetAsync($"{item.PushUri}{pingReply.RoundtripTime}");
+                        }
+                        catch
+                        {
+                            _logger.LogError($"Error trying to push results to {item.PushUri} at: {DateTimeOffset.Now}");
+                        }
                     }
-                    catch
-                    {
-                        _logger.LogError($"Error trying to push results to {configurations.Uri} at: {DateTimeOffset.Now}");
-                    }
+                    _logger.LogWarning($"Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}");
                 }
-                _logger.LogWarning($"Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}");
             }
             await Task.Delay(configurations.Delay, stoppingToken);
         }
