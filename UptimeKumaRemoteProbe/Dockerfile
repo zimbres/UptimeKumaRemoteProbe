@@ -5,11 +5,11 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj", "UptimeKumaRemoteProbe/"]
-RUN dotnet restore "UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj"
+COPY ["UptimeKumaRemoteProbe.csproj", "./"]
+RUN dotnet restore "./UptimeKumaRemoteProbe.csproj"
 COPY . .
-WORKDIR "/src/UptimeKumaRemoteProbe"
-RUN dotnet build "UptimeKumaRemoteProbe.csproj" -c Release -o /app/build
+WORKDIR "/src/"
+RUN dotnet build "./UptimeKumaRemoteProbe.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "UptimeKumaRemoteProbe.csproj" -c Release -o /app/publish
