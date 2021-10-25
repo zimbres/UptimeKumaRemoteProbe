@@ -10,13 +10,15 @@ public class Worker : BackgroundService
     private readonly IConfiguration _configuration;
     private readonly PingService _pingService;
     private readonly HttpService _httpService;
+    private readonly TcpService _tcpService;
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService, TcpService tcpService)
     {
         _logger = logger;
         _configuration = configuration;
         _pingService = pingService;
         _httpService = httpService;
+        _tcpService = tcpService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,6 +46,9 @@ public class Worker : BackgroundService
                             break;
                         case "Http":
                             await _httpService.CheckHttp(item);
+                            break;
+                        case "Tcp":
+                            await _tcpService.CheckTcp(item);
                             break;
                         default:
                             break;

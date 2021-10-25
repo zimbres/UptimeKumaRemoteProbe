@@ -13,6 +13,7 @@ public class Endpoint
     public string Type { get; set; }
     public Uri PushUri { get; set; }
     public string Destination { get; set; }
+    public int Port { get; set; }
     public string Keyword { get; set; }
     public bool IgnoreSSL { get; set; }
     public int Timeout { get; set; }
