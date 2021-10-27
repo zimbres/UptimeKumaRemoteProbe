@@ -16,6 +16,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<PingService>();
         services.AddSingleton<HttpService>();
         services.AddSingleton<TcpService>();
+        services.AddSingleton<PushService>();
         services.AddHostedService<Worker>();
     })
     .Build();

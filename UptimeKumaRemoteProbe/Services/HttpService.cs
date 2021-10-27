@@ -8,12 +8,14 @@ public class HttpService
     private readonly ILogger<HttpService> _logger;
     private HttpClient _httpClient;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly PushService _pushService;
 
-    public HttpService(ILogger<HttpService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory)
+    public HttpService(ILogger<HttpService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory, PushService pushService)
     {
         _logger = logger;
         _httpClient = httpClient;
         _httpClientFactory = httpClientFactory;
+        _pushService = pushService;
     }
 
     public async Task CheckHttp(Endpoint endpoint)
@@ -43,14 +45,7 @@ public class HttpService
 
         if (result is not null && result.IsSuccessStatusCode)
         {
-            try
-            {
-                await _httpClient.GetAsync($"{endpoint.PushUri}{stopwatch.ElapsedMilliseconds}");
-            }
-            catch
-            {
-                _logger.LogError($"Error trying to push results to {endpoint.PushUri} at: {DateTimeOffset.Now}");
-            }
+            await _pushService.Push(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
     }
 }
