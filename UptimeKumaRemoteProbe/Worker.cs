@@ -35,6 +35,11 @@ public class Worker : BackgroundService
                 upReply = ping.Send(configurations.UpDependency, configurations.Timeout);
             }
 
+            if (upReply is null || upReply.Status != IPStatus.Success)
+            {
+                _logger.LogError("Up Dependency is either not set or unreachable.");
+            }
+
             if (upReply is not null && upReply.Status == IPStatus.Success)
             {
                 foreach (var item in configurations.Endpoints)
