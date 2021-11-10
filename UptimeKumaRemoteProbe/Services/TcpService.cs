@@ -15,7 +15,7 @@ public class TcpService
         _pushService = pushService;
     }
 
-    public async Task CheckTcp(Endpoint endpoint)
+    public async Task CheckTcpAsync(Endpoint endpoint)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -29,7 +29,7 @@ public class TcpService
 
         if (tcpClient.Connected)
         {
-            await _pushService.Push(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
         _logger.LogWarning($"Tcp: {endpoint.Destination}:{endpoint.Port} {tcpClient.Connected} at: {DateTimeOffset.Now}");
     }

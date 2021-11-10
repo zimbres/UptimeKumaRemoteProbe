@@ -13,7 +13,7 @@ public class PushService
         _httpClient = _httpClientFactory.CreateClient();
     }
 
-    public async Task Push(Uri uri, long elapsedMilliseconds)
+    public async Task PushAsync(Uri uri, long elapsedMilliseconds)
     {
         try
         {

@@ -21,12 +21,12 @@ public class Worker : BackgroundService
         _tcpService = tcpService;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var configurations = _configuration.GetSection(nameof(Configurations)).Get<Configurations>();
 
         Ping ping = new();
-        PingReply upReply = null;
+        PingReply? upReply = null;
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -47,13 +47,13 @@ public class Worker : BackgroundService
                     switch (item.Type)
                     {
                         case "Ping":
-                            await _pingService.CheckPing(item);
+                            await _pingService.CheckPingAsync(item);
                             break;
                         case "Http":
-                            await _httpService.CheckHttp(item);
+                            await _httpService.CheckHttpAsync(item);
                             break;
                         case "Tcp":
-                            await _tcpService.CheckTcp(item);
+                            await _tcpService.CheckTcpAsync(item);
                             break;
                         default:
                             break;

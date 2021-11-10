@@ -18,7 +18,7 @@ public class HttpService
         _pushService = pushService;
     }
 
-    public async Task CheckHttp(Endpoint endpoint)
+    public async Task CheckHttpAsync(Endpoint endpoint)
     {
         _httpClient = _httpClientFactory.CreateClient(endpoint.IgnoreSSL ? "IgnoreSSL" : "Default");
 
@@ -45,7 +45,7 @@ public class HttpService
 
         if (result is not null && result.IsSuccessStatusCode)
         {
-            await _pushService.Push(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
     }
 }

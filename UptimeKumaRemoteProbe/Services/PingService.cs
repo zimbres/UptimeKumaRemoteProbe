@@ -14,14 +14,14 @@ public class PingService
         _pushService = pushService;
     }
 
-    public async Task CheckPing(Endpoint endpoint)
+    public async Task CheckPingAsync(Endpoint endpoint)
     {
         Ping ping = new();
         PingReply pingReply = ping.Send(endpoint.Destination, endpoint.Timeout);
 
         if (pingReply.Status == IPStatus.Success)
         {
-            await _pushService.Push(endpoint.PushUri, pingReply.RoundtripTime);
+            await _pushService.PushAsync(endpoint.PushUri, pingReply.RoundtripTime);
         }
         _logger.LogWarning($"Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}");
     }
