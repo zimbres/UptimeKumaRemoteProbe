@@ -11,14 +11,16 @@ public class Worker : BackgroundService
     private readonly PingService _pingService;
     private readonly HttpService _httpService;
     private readonly TcpService _tcpService;
+    private readonly CertificateService _certificateService;
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService, TcpService tcpService)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService, TcpService tcpService, CertificateService certificateService)
     {
         _logger = logger;
         _configuration = configuration;
         _pingService = pingService;
         _httpService = httpService;
         _tcpService = tcpService;
+        _certificateService = certificateService;
     }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,6 +56,9 @@ public class Worker : BackgroundService
                             break;
                         case "Tcp":
                             await _tcpService.CheckTcpAsync(item);
+                            break;
+                        case "Certificate":
+                            await _certificateService.CheckCertificateAsync(item);
                             break;
                         default:
                             break;
