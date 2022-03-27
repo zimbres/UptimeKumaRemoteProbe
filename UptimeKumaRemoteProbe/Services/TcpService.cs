@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net.Sockets;
-using UptimeKumaRemoteProbe.Models;
-
-namespace UptimeKumaRemoteProbe.Services;
+﻿namespace UptimeKumaRemoteProbe.Services;
 
 public class TcpService
 {

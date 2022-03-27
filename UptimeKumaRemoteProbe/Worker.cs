@@ -1,7 +1,3 @@
-using System.Net.NetworkInformation;
-using UptimeKumaRemoteProbe.Models;
-using UptimeKumaRemoteProbe.Services;
-
 namespace UptimeKumaRemoteProbe;
 
 public class Worker : BackgroundService

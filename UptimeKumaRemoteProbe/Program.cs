@@ -1,15 +1,9 @@
-using UptimeKumaRemoteProbe;
-using UptimeKumaRemoteProbe.Services;
-
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
+    .ConfigureServices(services => {
         services.AddHttpClient("Default");
         services.AddHttpClient("IgnoreSSL")
-        .ConfigurePrimaryHttpMessageHandler(() =>
-        {
-            return new HttpClientHandler
-            {
+        .ConfigurePrimaryHttpMessageHandler(() => {
+            return new HttpClientHandler {
                 ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
             };
         });

@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using UptimeKumaRemoteProbe.Models;
-
-namespace UptimeKumaRemoteProbe.Services;
+﻿namespace UptimeKumaRemoteProbe.Services;
 
 public class HttpService
 {

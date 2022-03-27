@@ -1,7 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using UptimeKumaRemoteProbe.Models;
-
-namespace UptimeKumaRemoteProbe.Services;
+﻿namespace UptimeKumaRemoteProbe.Services;
 
 public class PingService
 {
