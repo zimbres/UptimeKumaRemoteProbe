@@ -7,7 +7,7 @@
     <UserSecretsId>dotnet-UptimeKumaRemoteProbe-D033D03F-3E6F-45E9-91FF-0FE1999F7A08</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationIcon>uptime-kuma.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
