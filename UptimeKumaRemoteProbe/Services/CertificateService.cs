@@ -29,7 +29,8 @@ public class CertificateService
         try
         {
             var result = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, endpoint.Destination));
-            _logger.LogWarning($"Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}");
+            _logger.LogWarning("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
+                endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
 
             if (notAfter >= DateTime.UtcNow.AddDays(10))
             {
@@ -38,7 +39,7 @@ public class CertificateService
         }
         catch
         {
-            _logger.LogError($"Error trying get {endpoint.Destination} at: {DateTimeOffset.Now}");
+            _logger.LogError("Error trying get {endpoint.Destination} at: {DateTimeOffset.Now}", endpoint.Destination, DateTimeOffset.Now);
         }
     }
 }

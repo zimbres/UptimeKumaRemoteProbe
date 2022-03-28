@@ -20,6 +20,6 @@ public class PingService
         {
             await _pushService.PushAsync(endpoint.PushUri, pingReply.RoundtripTime);
         }
-        _logger.LogWarning($"Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}");
+        _logger.LogInformation("Ping: {pingReply.Address} {pingReply.Status} at: {DateTimeOffset.Now}", pingReply.Address, pingReply.Status, DateTimeOffset.Now);
     }
 }

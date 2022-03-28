@@ -21,7 +21,7 @@ public class PushService
         }
         catch
         {
-            _logger.LogError($"Error trying to push results to {uri} at: {DateTimeOffset.Now}");
+            _logger.LogError("Error trying to push results to {uri} at: {DateTimeOffset.Now}", uri, DateTimeOffset.Now);
         }
     }
 }
