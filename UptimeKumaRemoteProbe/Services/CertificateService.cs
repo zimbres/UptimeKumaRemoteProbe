@@ -4,11 +4,16 @@ public class CertificateService
 {
     private readonly ILogger<CertificateService> _logger;
     private readonly PushService _pushService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private HttpClient _httpClient;
 
-    public CertificateService(ILogger<CertificateService> logger, PushService pushService)
+
+    public CertificateService(ILogger<CertificateService> logger, PushService pushService, IHttpClientFactory httpClientFactory, HttpClient httpClient)
     {
         _logger = logger;
         _pushService = pushService;
+        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
     }
 
     public async Task CheckCertificateAsync(Endpoint endpoint)
@@ -17,25 +22,29 @@ public class CertificateService
 
         DateTime notAfter = DateTime.UtcNow;
 
-        var httpClientHandler = new HttpClientHandler {
-            ServerCertificateCustomValidationCallback = (request, cert, chain, policyErrors) => {
+        var httpClientHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (request, cert, chain, policyErrors) =>
+            {
                 notAfter = cert.NotAfter;
                 return true;
             }
         };
 
-        using HttpClient httpClient = new(httpClientHandler);
+        _httpClient = _httpClientFactory.CreateClient("IgnoreSSL");
+        _httpClient = new HttpClient(httpClientHandler);
 
         try
         {
-            var result = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, endpoint.Destination));
-            _logger.LogWarning("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
-                endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
+            var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, endpoint.Destination));
 
             if (notAfter >= DateTime.UtcNow.AddDays(10))
             {
                 await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+                _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
+                    endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
             }
+            _logger.LogWarning("Certificate: {endpoint.Destination} expiration date: {notAfter}", endpoint.Destination, notAfter);
         }
         catch
         {
