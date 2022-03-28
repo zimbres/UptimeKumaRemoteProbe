@@ -7,7 +7,6 @@ public class CertificateService
     private readonly IHttpClientFactory _httpClientFactory;
     private HttpClient _httpClient;
 
-
     public CertificateService(ILogger<CertificateService> logger, PushService pushService, IHttpClientFactory httpClientFactory, HttpClient httpClient)
     {
         _logger = logger;
@@ -38,11 +37,12 @@ public class CertificateService
         {
             var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, endpoint.Destination));
 
-            if (notAfter >= DateTime.UtcNow.AddDays(10))
+            if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
                 await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
                 _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
                     endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
+                return;
             }
             _logger.LogWarning("Certificate: {endpoint.Destination} expiration date: {notAfter}", endpoint.Destination, notAfter);
         }

@@ -17,4 +17,5 @@ public class Endpoint
     public string Keyword { get; set; }
     public bool IgnoreSSL { get; set; }
     public int Timeout { get; set; }
+    public int CertificateExpiration { get; set; }
 }
