@@ -13,6 +13,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<PushService>();
         services.AddSingleton<CertificateService>();
         services.AddHostedService<Worker>();
+        services.RemoveAll<IHttpMessageHandlerBuilderFilter>(); //Disable HttpClient Logging
     })
     .Build();
 
