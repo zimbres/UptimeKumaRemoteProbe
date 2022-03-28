@@ -9,7 +9,8 @@ public class Worker : BackgroundService
     private readonly TcpService _tcpService;
     private readonly CertificateService _certificateService;
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService, TcpService tcpService, CertificateService certificateService)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService,
+        HttpService httpService, TcpService tcpService, CertificateService certificateService)
     {
         _logger = logger;
         _configuration = configuration;
