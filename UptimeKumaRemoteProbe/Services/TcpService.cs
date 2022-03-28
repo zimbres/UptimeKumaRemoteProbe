@@ -21,13 +21,15 @@ public class TcpService
         {
             await tcpClient.ConnectAsync(endpoint.Destination, endpoint.Port);
         }
-        catch { }
+        catch
+        {
+        }
 
         if (tcpClient.Connected)
         {
             await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
-        _logger.LogWarning("Tcp: {endpoint.Destination}:{endpoint.Port} {tcpClient.Connected} at: {DateTimeOffset.Now}",
+        _logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected} at: {DateTimeOffset.Now}",
             endpoint.Destination, endpoint.Port, tcpClient.Connected, DateTimeOffset.Now);
     }
 }
