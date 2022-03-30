@@ -18,4 +18,6 @@ public class Endpoint
     public bool IgnoreSSL { get; set; }
     public int Timeout { get; set; }
     public int CertificateExpiration { get; set; }
+    public string ConnectionString { get; set; }
+    public string Brand { get; set; }
 }

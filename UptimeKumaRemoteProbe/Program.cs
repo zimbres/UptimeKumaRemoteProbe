@@ -14,6 +14,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<HttpService>();
         services.AddSingleton<TcpService>();
         services.AddSingleton<PushService>();
+        services.AddSingleton<DbService>();
         services.AddSingleton<CertificateService>();
         services.AddHostedService<Worker>().Configure<HostOptions>(options =>
         {

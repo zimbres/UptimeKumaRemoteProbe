@@ -8,9 +8,10 @@ public class Worker : BackgroundService
     private readonly HttpService _httpService;
     private readonly TcpService _tcpService;
     private readonly CertificateService _certificateService;
+    private readonly DbService _dbService;
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService,
-        HttpService httpService, TcpService tcpService, CertificateService certificateService)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
+        TcpService tcpService, CertificateService certificateService, DbService dbService)
     {
         _logger = logger;
         _configuration = configuration;
@@ -18,6 +19,7 @@ public class Worker : BackgroundService
         _httpService = httpService;
         _tcpService = tcpService;
         _certificateService = certificateService;
+        _dbService = dbService;
     }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -56,6 +58,9 @@ public class Worker : BackgroundService
                             break;
                         case "Certificate":
                             await _certificateService.CheckCertificateAsync(item);
+                            break;
+                        case "DataBase":
+                            await _dbService.CheckDbAsync(item);
                             break;
                         default:
                             break;
