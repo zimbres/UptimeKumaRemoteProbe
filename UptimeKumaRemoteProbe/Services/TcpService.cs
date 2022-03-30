@@ -23,6 +23,7 @@ public class TcpService
         }
         catch
         {
+            // Ignore
         }
 
         if (tcpClient.Connected)
