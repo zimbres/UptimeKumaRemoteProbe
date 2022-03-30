@@ -25,8 +25,4 @@ public class ApplicationDbContext : DbContext
                 break;
         }
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-    }
 }
