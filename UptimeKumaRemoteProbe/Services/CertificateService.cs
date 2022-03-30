@@ -17,8 +17,6 @@ public class CertificateService
 
     public async Task CheckCertificateAsync(Endpoint endpoint)
     {
-        var stopwatch = Stopwatch.StartNew();
-
         DateTime notAfter = DateTime.UtcNow;
 
         var httpClientHandler = new HttpClientHandler
@@ -35,11 +33,11 @@ public class CertificateService
 
         try
         {
-            var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, endpoint.Destination));
+            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method), endpoint.Destination));
 
             if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
-                await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+                await _pushService.PushAsync(endpoint.PushUri, (notAfter - DateTime.UtcNow).Days);
                 _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
                     endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
                 return;
