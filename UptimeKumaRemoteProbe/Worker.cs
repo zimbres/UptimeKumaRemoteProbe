@@ -43,31 +43,36 @@ public class Worker : BackgroundService
 
             if (upReply is not null && upReply.Status == IPStatus.Success)
             {
-                foreach (var item in configurations.Endpoints)
-                {
-                    switch (item.Type)
-                    {
-                        case "Ping":
-                            await _pingService.CheckPingAsync(item);
-                            break;
-                        case "Http":
-                            await _httpService.CheckHttpAsync(item);
-                            break;
-                        case "Tcp":
-                            await _tcpService.CheckTcpAsync(item);
-                            break;
-                        case "Certificate":
-                            await _certificateService.CheckCertificateAsync(item);
-                            break;
-                        case "DataBase":
-                            await _dbService.CheckDbAsync(item);
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                await LoopAsync(configurations);
             }
             await Task.Delay(configurations.Delay, stoppingToken);
+        }
+    }
+
+    private async Task LoopAsync(Configurations configurations)
+    {
+        foreach (var item in configurations.Endpoints)
+        {
+            switch (item.Type)
+            {
+                case "Ping":
+                    await _pingService.CheckPingAsync(item);
+                    break;
+                case "Http":
+                    await _httpService.CheckHttpAsync(item);
+                    break;
+                case "Tcp":
+                    await _tcpService.CheckTcpAsync(item);
+                    break;
+                case "Certificate":
+                    await _certificateService.CheckCertificateAsync(item);
+                    break;
+                case "DataBase":
+                    await _dbService.CheckDbAsync(item);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
