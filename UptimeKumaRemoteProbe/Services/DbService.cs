@@ -27,7 +27,7 @@ public class DbService
                     status = dbContext.DbVersion?.FromSqlRaw("Select @@VERSION AS Version").First().Version;
                     break;
                 case "MYSQL":
-                    status = dbContext.DbVersion?.FromSqlRaw("Select VERSION() AS Version;").First().Version;
+                    status = dbContext.DbVersion?.FromSqlRaw("Select VERSION() AS Version").First().Version;
                     break;
                 default:
                     break;
