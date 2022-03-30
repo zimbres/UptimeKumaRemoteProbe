@@ -33,7 +33,7 @@ public class HttpService
             _logger.LogWarning("Http: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
                 endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
 
-            if (endpoint.Keyword != "" && !content.Contains(endpoint.Keyword)) throw new ArgumentNullException(nameof(endpoint.Keyword), "Keyword not found.");
+            if (endpoint.Keyword != "" && !content.Contains(endpoint.Keyword)) throw new ArgumentNullException(nameof(endpoint), "Keyword not found.");
         }
         catch
         {
