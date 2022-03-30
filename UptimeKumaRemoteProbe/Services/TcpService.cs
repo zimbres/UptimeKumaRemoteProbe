@@ -31,5 +31,7 @@ public class TcpService
         }
         _logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected} at: {DateTimeOffset.Now}",
             endpoint.Destination, endpoint.Port, tcpClient.Connected, DateTimeOffset.Now);
+
+        tcpClient.Dispose();
     }
 }
