@@ -17,7 +17,7 @@ public class DbService
 
         var dbContext = new ApplicationDbContext(endpoint);
 
-        string? status = null;
+        string status = null;
 
         try
         {

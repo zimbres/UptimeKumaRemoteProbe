@@ -27,7 +27,7 @@ public class Worker : BackgroundService
         var configurations = _configuration.GetSection(nameof(Configurations)).Get<Configurations>();
 
         Ping ping = new();
-        PingReply? upReply = null;
+        PingReply upReply = null;
 
         while (!stoppingToken.IsCancellationRequested)
         {

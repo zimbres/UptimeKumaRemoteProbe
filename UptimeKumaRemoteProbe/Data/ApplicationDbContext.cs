@@ -9,7 +9,7 @@ public class ApplicationDbContext : DbContext
         _endpoint = endpoint;
     }
 
-    public DbSet<DbVersion>? DbVersion { get; set; }
+    public DbSet<DbVersion> DbVersion { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

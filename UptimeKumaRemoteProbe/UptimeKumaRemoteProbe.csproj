@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-UptimeKumaRemoteProbe-D033D03F-3E6F-45E9-91FF-0FE1999F7A08</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
