@@ -7,7 +7,16 @@
     <UserSecretsId>dotnet-UptimeKumaRemoteProbe-D033D03F-3E6F-45E9-91FF-0FE1999F7A08</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationIcon>uptime-kuma.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.0.8</AssemblyVersion>
+    <AssemblyVersion>1.0.0.9</AssemblyVersion>
+    <FileVersion>1.0.0.9</FileVersion>
+    <Version>1.0.0.9</Version>
+    <Copyright>Zimbres.Com</Copyright>
+    <PackageProjectUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</RepositoryUrl>
+    <Description>A Remote Probe written in C# to work with Uptime Kuma "Push" monitor type.</Description>
+    <Company>Zimbres.Com</Company>
+    <Authors>zimbres</Authors>
+    <Product>Uptime Kuma Remote Probe</Product>
   </PropertyGroup>
 
   <ItemGroup>
