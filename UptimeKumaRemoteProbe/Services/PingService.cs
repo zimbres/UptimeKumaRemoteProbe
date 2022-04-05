@@ -14,7 +14,16 @@ public class PingService
     public async Task CheckPingAsync(Endpoint endpoint)
     {
         Ping ping = new();
-        PingReply pingReply = ping.Send(endpoint.Destination, endpoint.Timeout);
+        PingReply pingReply = null;
+
+        try
+        {
+            pingReply = ping.Send(endpoint.Destination, endpoint.Timeout);
+        }
+        catch
+        {
+            // Ignore
+        }
 
         if (pingReply.Status == IPStatus.Success)
         {

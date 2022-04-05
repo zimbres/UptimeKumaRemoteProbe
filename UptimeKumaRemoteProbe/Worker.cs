@@ -33,12 +33,19 @@ public class Worker : BackgroundService
         {
             if (configurations.UpDependency != "")
             {
-                upReply = ping.Send(configurations.UpDependency, configurations.Timeout);
+                try
+                {
+                    upReply = ping.Send(configurations.UpDependency, configurations.Timeout);
+                }
+                catch
+                {
+                    _logger.LogError("UpDependency is unreachable.");
+                }
             }
 
-            if (upReply is null || upReply.Status != IPStatus.Success)
+            if (configurations.UpDependency == "")
             {
-                _logger.LogError("Up Dependency is either not set or unreachable.");
+                _logger.LogError("Up Dependency is not set.");
             }
 
             if (upReply is not null && upReply.Status == IPStatus.Success)
