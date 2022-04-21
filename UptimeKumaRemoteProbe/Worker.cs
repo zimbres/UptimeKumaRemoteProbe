@@ -26,8 +26,14 @@ public class Worker : BackgroundService
     {
         var configurations = _configuration.GetSection(nameof(Configurations)).Get<Configurations>();
 
+        if (configurations.UpDependency == "")
+        {
+            _logger.LogWarning("Up Dependency is not set.");
+            Environment.Exit(0);
+        }
+
         Ping ping = new();
-        PingReply upReply = null;
+        PingReply pingReply = null;
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -35,22 +41,21 @@ public class Worker : BackgroundService
             {
                 try
                 {
-                    upReply = ping.Send(configurations.UpDependency, configurations.Timeout);
+                    pingReply = ping.Send(configurations.UpDependency, configurations.Timeout);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    _logger.LogError("UpDependency is unreachable.");
+                    _logger.LogError("Network is unreachable. {ex}", ex.Message);
                 }
             }
 
-            if (configurations.UpDependency == "")
-            {
-                _logger.LogError("Up Dependency is not set.");
-            }
-
-            if (upReply is not null && upReply.Status == IPStatus.Success)
+            if (pingReply?.Status == IPStatus.Success)
             {
                 await LoopAsync(configurations);
+            }
+            else
+            {
+                _logger.LogError("Up Dependency is unreachable.");
             }
             await Task.Delay(configurations.Delay, stoppingToken);
         }
