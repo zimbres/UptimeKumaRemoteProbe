@@ -24,6 +24,8 @@ public class Worker : BackgroundService
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
         var configurations = _configuration.GetSection(nameof(Configurations)).Get<Configurations>();
 
         if (configurations.UpDependency == "")
