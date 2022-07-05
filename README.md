@@ -9,6 +9,12 @@
 
 ---
 
+### Pre built container
+
+>https://hub.docker.com/r/zimbres/uptime-kuma-remote-probe
+
+---
+
 Services configuration is done by editing the file appsettings.json and restarting application.
 
 `"UpDependency": "192.168.1.1"` should be a trustable IP in your network, your ISP gateway for example. In case of this IP is not available, no other checks will be executed.
