@@ -1,0 +1,22 @@
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["UptimeKumaRemoteProbe.csproj", "./"]
+RUN dotnet restore "./UptimeKumaRemoteProbe.csproj"
+COPY . .
+
+ARG TARGETPLATFORM
+
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+    RID=linux-x64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    RID=linux-arm64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    RID=linux-arm ; \
+    fi \
+    && dotnet publish "UptimeKumaRemoteProbe.csproj" -c Release -o /app/publish -r $RID --self-contained false
+
+FROM mcr.microsoft.com/dotnet/runtime:6.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "UptimeKumaRemoteProbe.dll"]
