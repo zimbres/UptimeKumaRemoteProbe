@@ -3,6 +3,9 @@
 public class Configurations
 {
     public List<Endpoint> Endpoints { get; set; }
+    public string MonitorsApi { get; set; }
+    public string ProbeName { get; set; }
+    public string BasePushUri { get; set; }
     public string UpDependency { get; set; }
     public int Timeout { get; set; }
     public int Delay { get; set; }
