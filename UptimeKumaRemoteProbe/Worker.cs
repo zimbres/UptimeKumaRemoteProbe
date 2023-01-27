@@ -82,7 +82,8 @@ public class Worker : BackgroundService
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).First(),
                     Timeout = 1000,
-                    PushUri = new Uri($"{_configurations.BasePushUri}{monitor.PushToken}?status=up&msg=OK&ping=")
+                    PushUri = new Uri($"{_configurations.BasePushUri}{monitor.PushToken}?status=up&msg=OK&ping="),
+                    Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty
                 };
                 endpoints.Add(endpoint);
             }

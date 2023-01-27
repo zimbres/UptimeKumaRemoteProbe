@@ -9,7 +9,7 @@
     <ApplicationIcon>uptime-kuma.ico</ApplicationIcon>
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>1.0.1.4</Version>
+    <Version>2.0.0.2</Version>
     <Copyright>Zimbres.Com</Copyright>
     <PackageProjectUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</RepositoryUrl>

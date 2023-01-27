@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace UptimeKumaRemoteProbe.Models;
+﻿namespace UptimeKumaRemoteProbe.Models;
 
 public class Monitors
 {

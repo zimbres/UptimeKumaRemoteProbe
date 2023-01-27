@@ -4,6 +4,8 @@ public class Configurations
 {
     public List<Endpoint> Endpoints { get; set; }
     public string MonitorsApi { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
     public string ProbeName { get; set; }
     public string BasePushUri { get; set; }
     public string UpDependency { get; set; }

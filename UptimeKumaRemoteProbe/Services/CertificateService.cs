@@ -33,7 +33,7 @@ public class CertificateService
 
         try
         {
-            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method), endpoint.Destination));
+            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method ?? "Head"), endpoint.Destination));
 
             if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
