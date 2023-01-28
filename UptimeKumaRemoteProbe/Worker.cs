@@ -83,7 +83,9 @@ public class Worker : BackgroundService
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).First(),
                     Timeout = 1000,
                     PushUri = new Uri($"{_configurations.BasePushUri}{monitor.PushToken}?status=up&msg=OK&ping="),
-                    Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty
+                    Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
+                    CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3")
                 };
                 endpoints.Add(endpoint);
             }
