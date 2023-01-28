@@ -35,7 +35,7 @@ public class DbService
         }
         catch
         {
-            _logger.LogError("Error trying get {endpoint.Brand} at: {DateTimeOffset.Now}", endpoint.Brand, DateTimeOffset.Now);
+            _logger.LogError("Error trying get {endpoint.Brand}", endpoint.Brand);
         }
 
         if (status is not null)

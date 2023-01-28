@@ -34,7 +34,7 @@ public class MonitorsService
         }
         catch
         {
-            _logger.LogError("Error trying get monitors at: {DateTimeOffset.Now}", DateTimeOffset.Now);
+            _logger.LogError("Error trying get monitors");
             return null;
         }
     }
