@@ -26,11 +26,11 @@ public class Worker : BackgroundService
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        _logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
         if (_configurations.UpDependency == "")
         {
-            _logger.LogWarning("Up Dependency is not set.");
+            _logger.LogError("Up Dependency is not set.");
             Environment.Exit(0);
         }
 
