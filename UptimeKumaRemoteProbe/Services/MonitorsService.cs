@@ -4,53 +4,62 @@ public class MonitorsService
 {
     private readonly ILogger<MonitorsService> _logger;
     private readonly Configurations _configuration;
-    private readonly HttpClient _httpClient;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private string token;
+    private JsonElement _monitors;
 
-    public MonitorsService(ILogger<MonitorsService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
     {
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
         _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>(); ;
-        _httpClient = _httpClientFactory.CreateClient("Default");
     }
 
     public async Task<List<Monitors>> GetMonitorsAsync()
     {
         try
         {
-            var response = await _httpClient.GetAsync($"{_configuration.MonitorsApi}/monitors");
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            var data = new
             {
-                _httpClient.DefaultRequestHeaders.Clear();
-                await AuthenticateAsync();
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-                response = await _httpClient.GetAsync($"{_configuration.MonitorsApi}/monitors");
+                username = _configuration.Username,
+                password = _configuration.Password,
+                token = ""
+            };
+
+            var socket = new SocketIO(_configuration.Url);
+
+            socket.On("monitorList", response =>
+            {
+                _monitors = response.GetValue();
+            });
+
+            socket.OnConnected += async (sender, e) =>
+            {
+                await socket.EmitAsync("login", (ack) =>
+                {
+                    var result = JsonNode.Parse(ack.GetValue(0).ToString());
+                    if (result["ok"].ToString() != "true")
+                    {
+                        _logger.LogError("Uptime Kuma login failure");
+                    }
+                }, data);
+            };
+
+            await socket.ConnectAsync();
+
+            int round = 0;
+            while (_monitors.ValueKind == JsonValueKind.Undefined)
+            {
+                round++;
+                await Task.Delay(1000);
+                if (round >= 10) break;
             }
-            var stringJson = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<List<Monitors>>(stringJson);
-            return result;
+
+            await socket.DisconnectAsync();
+            var monitors = JsonSerializer.Deserialize<Dictionary<string, Monitors>>(_monitors);
+            return monitors.Values.ToList();
         }
         catch
         {
-            _logger.LogError("Error trying get monitors");
+            _logger.LogError("Error trying to get monitors");
             return null;
         }
-    }
-
-    private async Task AuthenticateAsync()
-    {
-        var dict = new Dictionary<string, string>
-        {
-            { "Content-Type" , "application/x-www-form-urlencoded" },
-            { "username" , $"{_configuration.Username}" },
-            { "password" , $"{_configuration.Password}" }
-        };
-
-        var result = await _httpClient.PostAsync($"{_configuration.MonitorsApi}/token", new FormUrlEncodedContent(dict));
-        var tokenResult = await result.Content.ReadAsStringAsync();
-        var tokenObject = JsonDocument.Parse(tokenResult);
-        token = tokenObject.RootElement.GetProperty("access_token").ToString();
     }
 }

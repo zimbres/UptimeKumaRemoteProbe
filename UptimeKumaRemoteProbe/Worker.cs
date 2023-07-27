@@ -75,16 +75,18 @@ public class Worker : BackgroundService
         foreach (var monitor in monitors)
         {
             var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _configurations.ProbeName;
-            if (monitor.Active && monitor.Type == "push" && probe)
+            if (monitor.Active == 1 && monitor.Maintenance is false && monitor.Type == "push" && probe)
             {
                 var endpoint = new Endpoint
                 {
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).First(),
                     Timeout = 1000,
-                    PushUri = new Uri($"{_configurations.BasePushUri}{monitor.PushToken}?status=up&msg=OK&ping="),
+                    PushUri = new Uri($"{_configurations.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
+                    Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    Port = int.Parse(monitor.Tags.Where(w => w.Name == "Port").Select(s => s.Value).FirstOrDefault() ?? "0"),
                     CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3")
                 };
                 endpoints.Add(endpoint);
@@ -111,7 +113,8 @@ public class Worker : BackgroundService
                 case "Certificate":
                     await _certificateService.CheckCertificateAsync(item);
                     break;
-                case "DataBase":
+                case "Database":
+                    item.ConnectionString = $"{_configurations.ConnectionStrings}.{item.Brand}";
                     await _dbService.CheckDbAsync(item);
                     break;
                 default:

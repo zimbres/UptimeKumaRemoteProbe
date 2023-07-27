@@ -9,7 +9,7 @@
     <ApplicationIcon>uptime-kuma.ico</ApplicationIcon>
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>2.0.1.1</Version>
+    <Version>3.0.0.1</Version>
     <Copyright>Zimbres.Com</Copyright>
     <PackageProjectUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zimbres/UptimeKumaRemoteProbe</RepositoryUrl>
@@ -43,5 +43,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
+    <PackageReference Include="SocketIOClient" Version="3.0.8" />
   </ItemGroup>
 </Project>

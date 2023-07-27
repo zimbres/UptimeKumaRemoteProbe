@@ -27,7 +27,7 @@ public class Monitors
     public long Weight { get; set; }
 
     [JsonPropertyName("active")]
-    public bool Active { get; set; }
+    public int Active { get; set; }
 
     [JsonPropertyName("type")]
     public string Type { get; set; }
@@ -78,7 +78,7 @@ public class Monitors
     public object ProxyId { get; set; }
 
     [JsonPropertyName("notificationIDList")]
-    public object[] NotificationIdList { get; set; }
+    public object NotificationIdList { get; set; }
 
     [JsonPropertyName("tags")]
     public Tag[] Tags { get; set; }
