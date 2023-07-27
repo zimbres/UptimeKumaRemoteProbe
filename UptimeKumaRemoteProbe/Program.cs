@@ -22,6 +22,13 @@ IHost host = Host.CreateDefaultBuilder(args)
             options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
         });
         services.RemoveAll<IHttpMessageHandlerBuilderFilter>(); //Disable HttpClient Logging
+        services.AddHealthChecks();
+        services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
+        services.Configure<HealthCheckPublisherOptions>(options =>
+        {
+            options.Delay = TimeSpan.FromSeconds(5);
+            options.Period = TimeSpan.FromSeconds(20);
+        });
     })
     .Build();
 
