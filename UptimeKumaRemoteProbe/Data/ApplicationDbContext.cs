@@ -21,6 +21,9 @@ public class ApplicationDbContext : DbContext
             case "MYSQL":
                 optionsBuilder.UseMySQL(_endpoint.ConnectionString);
                 break;
+            case "PGSQL":
+                optionsBuilder.UseNpgsql(_endpoint.ConnectionString);
+                break;
             default:
                 break;
         }
