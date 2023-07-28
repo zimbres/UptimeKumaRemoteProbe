@@ -11,7 +11,7 @@ public class Worker : BackgroundService
     private readonly MonitorsService _monitorsService;
     private readonly Configurations _configurations;
     private readonly DomainService _domainService;
-    private static DateOnly lastDailyExecution = DateOnly.FromDateTime(DateTime.Now);
+    private static DateOnly lastDailyExecution;
 
     public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
         TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
@@ -134,7 +134,7 @@ public class Worker : BackgroundService
 
     private static async Task<bool> CheckDailyExecutionAsync()
     {
-        if (lastDailyExecution != DateOnly.FromDateTime(DateTime.Now))
+        if (lastDailyExecution == DateOnly.FromDateTime(DateTime.Now))
         {
             return await Task.FromResult(true);
         }
