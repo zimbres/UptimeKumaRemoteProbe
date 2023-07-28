@@ -30,14 +30,14 @@ public class HttpService
             result = await _httpClient.GetAsync(endpoint.Destination);
             content = await result.Content.ReadAsStringAsync();
 
-            _logger.LogWarning("Http: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
-                endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
+            _logger.LogInformation("Http: {endpoint.Destination} {result.StatusCode}",
+                endpoint.Destination, result.StatusCode);
 
             if (endpoint.Keyword != "" && !content.Contains(endpoint.Keyword)) throw new ArgumentNullException(nameof(endpoint), "Keyword not found.");
         }
         catch
         {
-            _logger.LogError("Error trying get {endpoint.Destination} at: {DateTimeOffset.Now}", endpoint.Destination, DateTimeOffset.Now);
+            _logger.LogError("Error trying get {endpoint.Destination}", endpoint.Destination);
             return;
         }
 

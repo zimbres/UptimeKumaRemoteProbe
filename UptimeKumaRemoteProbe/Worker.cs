@@ -3,34 +3,38 @@ namespace UptimeKumaRemoteProbe;
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly IConfiguration _configuration;
     private readonly PingService _pingService;
     private readonly HttpService _httpService;
     private readonly TcpService _tcpService;
     private readonly CertificateService _certificateService;
     private readonly DbService _dbService;
+    private readonly MonitorsService _monitorsService;
+    private readonly Configurations _configurations;
+    private readonly DomainService _domainService;
+    private static DateOnly lastDailyExecution;
 
     public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
-        TcpService tcpService, CertificateService certificateService, DbService dbService)
+        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
+        DomainService domainService)
     {
         _logger = logger;
-        _configuration = configuration;
+        _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
         _pingService = pingService;
         _httpService = httpService;
         _tcpService = tcpService;
         _certificateService = certificateService;
         _dbService = dbService;
+        _monitorsService = monitorsService;
+        _domainService = domainService;
     }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        _logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-        var configurations = _configuration.GetSection(nameof(Configurations)).Get<Configurations>();
-
-        if (configurations.UpDependency == "")
+        if (_configurations.UpDependency == "")
         {
-            _logger.LogWarning("Up Dependency is not set.");
+            _logger.LogError("Up Dependency is not set.");
             Environment.Exit(0);
         }
 
@@ -39,11 +43,11 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (configurations.UpDependency != "")
+            if (_configurations.UpDependency != "")
             {
                 try
                 {
-                    pingReply = ping.Send(configurations.UpDependency, configurations.Timeout);
+                    pingReply = ping.Send(_configurations.UpDependency, _configurations.Timeout);
                 }
                 catch (Exception ex)
                 {
@@ -53,19 +57,52 @@ public class Worker : BackgroundService
 
             if (pingReply?.Status == IPStatus.Success)
             {
-                await LoopAsync(configurations);
+                var monitors = await _monitorsService.GetMonitorsAsync();
+                if (monitors is not null)
+                {
+                    var endpoints = ParseEndpoints(monitors);
+                    await LoopAsync(endpoints);
+                }
             }
             else
             {
                 _logger.LogError("Up Dependency is unreachable.");
             }
-            await Task.Delay(configurations.Delay, stoppingToken);
+            await Task.Delay(_configurations.Delay, stoppingToken);
         }
     }
 
-    private async Task LoopAsync(Configurations configurations)
+    private List<Endpoint> ParseEndpoints(List<Monitors> monitors)
     {
-        foreach (var item in configurations.Endpoints)
+        var endpoints = new List<Endpoint>();
+
+        foreach (var monitor in monitors)
+        {
+            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _configurations.ProbeName;
+            if (monitor.Active && monitor.Maintenance is false && monitor.Type == "push" && probe)
+            {
+                var endpoint = new Endpoint
+                {
+                    Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
+                    Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    Timeout = 1000,
+                    PushUri = new Uri($"{_configurations.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
+                    Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
+                    Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    Port = int.Parse(monitor.Tags.Where(w => w.Name == "Port").Select(s => s.Value).FirstOrDefault() ?? "0"),
+                    Domain = monitor.Tags.Where(w => w.Name == "Domain").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
+                    CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3")
+                };
+                endpoints.Add(endpoint);
+            }
+        }
+        return endpoints;
+    }
+
+    private async Task LoopAsync(List<Endpoint> endpoints)
+    {
+        foreach (var item in endpoints)
         {
             switch (item.Type)
             {
@@ -81,12 +118,30 @@ public class Worker : BackgroundService
                 case "Certificate":
                     await _certificateService.CheckCertificateAsync(item);
                     break;
-                case "DataBase":
+                case "Database":
+                    item.ConnectionString = $"{_configurations.ConnectionStrings}.{item.Brand}";
                     await _dbService.CheckDbAsync(item);
+                    break;
+                case "Domain":
+                    if (await CheckDailyExecutionAsync()) break;
+                    await _domainService.CheckDomainAsync(item);
                     break;
                 default:
                     break;
             }
+        }
+    }
+
+    private static async Task<bool> CheckDailyExecutionAsync()
+    {
+        if (lastDailyExecution == DateOnly.FromDateTime(DateTime.Now))
+        {
+            return await Task.FromResult(true);
+        }
+        else
+        {
+            lastDailyExecution = DateOnly.FromDateTime(DateTime.Now);
+            return await Task.FromResult(false);
         }
     }
 }

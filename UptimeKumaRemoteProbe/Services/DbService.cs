@@ -29,13 +29,17 @@ public class DbService
                 case "MYSQL":
                     status = dbContext.DbVersion?.FromSqlRaw("Select VERSION() AS Version").First().Version;
                     break;
+                case "PGSQL":
+                    status = dbContext.DbVersion?.FromSqlRaw("Select Version()").ToString();
+                    break;
                 default:
+                    _logger.LogError("Brand must be MSSQL, MYSQL or PGSQL");
                     break;
             }
         }
         catch
         {
-            _logger.LogError("Error trying get {endpoint.Brand} at: {DateTimeOffset.Now}", endpoint.Brand, DateTimeOffset.Now);
+            _logger.LogError("Error trying get {endpoint.Brand}", endpoint.Brand);
         }
 
         if (status is not null)

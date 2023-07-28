@@ -30,8 +30,8 @@ public class TcpService
         {
             await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
-        _logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected} at: {DateTimeOffset.Now}",
-            endpoint.Destination, endpoint.Port, tcpClient.Connected, DateTimeOffset.Now);
+        _logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected}",
+            endpoint.Destination, endpoint.Port, tcpClient.Connected);
 
         tcpClient.Dispose();
     }

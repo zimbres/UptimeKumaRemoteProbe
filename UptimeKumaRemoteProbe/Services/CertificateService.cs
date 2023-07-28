@@ -33,20 +33,20 @@ public class CertificateService
 
         try
         {
-            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method), endpoint.Destination));
+            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method ?? "Head"), endpoint.Destination));
 
             if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
                 await _pushService.PushAsync(endpoint.PushUri, (notAfter - DateTime.UtcNow).Days);
-                _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode} at: {DateTimeOffset.Now}",
-                    endpoint.Destination, result.StatusCode, DateTimeOffset.Now);
+                _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode}",
+                    endpoint.Destination, result.StatusCode);
                 return;
             }
             _logger.LogWarning("Certificate: {endpoint.Destination} expiration date: {notAfter}", endpoint.Destination, notAfter);
         }
         catch
         {
-            _logger.LogError("Error trying get {endpoint.Destination} at: {DateTimeOffset.Now}", endpoint.Destination, DateTimeOffset.Now);
+            _logger.LogError("Error trying get {endpoint.Destination}", endpoint.Destination);
         }
     }
 }
