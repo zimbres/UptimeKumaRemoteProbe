@@ -27,7 +27,8 @@ public class Monitors
     public long Weight { get; set; }
 
     [JsonPropertyName("active")]
-    public int Active { get; set; }
+    [JsonConverter(typeof(JsonBooleanOrIntConverter))]
+    public bool Active { get; set; }
 
     [JsonPropertyName("type")]
     public string Type { get; set; }
@@ -187,4 +188,27 @@ public class Tag
 
     [JsonPropertyName("color")]
     public string Color { get; set; }
+}
+
+public class JsonBooleanOrIntConverter : JsonConverter<bool>
+{
+    public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            int value = reader.GetInt32();
+            return value != 0;
+        }
+        else if (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False)
+        {
+            return reader.GetBoolean();
+        }
+
+        throw new JsonException("Expected boolean or 0 for false.");
+    }
+
+    public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+    {
+        writer.WriteBooleanValue(value);
+    }
 }

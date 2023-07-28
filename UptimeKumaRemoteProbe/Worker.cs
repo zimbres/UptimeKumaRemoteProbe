@@ -75,7 +75,7 @@ public class Worker : BackgroundService
         foreach (var monitor in monitors)
         {
             var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _configurations.ProbeName;
-            if (monitor.Active == 1 && monitor.Maintenance is false && monitor.Type == "push" && probe)
+            if (monitor.Active && monitor.Maintenance is false && monitor.Type == "push" && probe)
             {
                 var endpoint = new Endpoint
                 {
