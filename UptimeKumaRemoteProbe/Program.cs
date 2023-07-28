@@ -17,6 +17,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<DbService>();
         services.AddSingleton<CertificateService>();
         services.AddSingleton<MonitorsService>();
+        services.AddSingleton<DomainService>();
         services.AddHostedService<Worker>().Configure<HostOptions>(options =>
         {
             options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;

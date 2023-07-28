@@ -10,9 +10,12 @@ public class Worker : BackgroundService
     private readonly DbService _dbService;
     private readonly MonitorsService _monitorsService;
     private readonly Configurations _configurations;
+    private readonly DomainService _domainService;
+    private static DateOnly lastDailyExecution = DateOnly.FromDateTime(DateTime.Now);
 
     public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
-        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService)
+        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
+        DomainService domainService)
     {
         _logger = logger;
         _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
@@ -22,6 +25,7 @@ public class Worker : BackgroundService
         _certificateService = certificateService;
         _dbService = dbService;
         _monitorsService = monitorsService;
+        _domainService = domainService;
     }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -80,13 +84,14 @@ public class Worker : BackgroundService
                 var endpoint = new Endpoint
                 {
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
-                    Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).First(),
+                    Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Timeout = 1000,
                     PushUri = new Uri($"{_configurations.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Port = int.Parse(monitor.Tags.Where(w => w.Name == "Port").Select(s => s.Value).FirstOrDefault() ?? "0"),
+                    Domain = monitor.Tags.Where(w => w.Name == "Domain").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3")
                 };
                 endpoints.Add(endpoint);
@@ -117,9 +122,26 @@ public class Worker : BackgroundService
                     item.ConnectionString = $"{_configurations.ConnectionStrings}.{item.Brand}";
                     await _dbService.CheckDbAsync(item);
                     break;
+                case "Domain":
+                    if (await CheckDailyExecutionAsync()) break;
+                    await _domainService.CheckDomainAsync(item);
+                    break;
                 default:
                     break;
             }
+        }
+    }
+
+    private static async Task<bool> CheckDailyExecutionAsync()
+    {
+        if (lastDailyExecution != DateOnly.FromDateTime(DateTime.Now))
+        {
+            return await Task.FromResult(true);
+        }
+        else
+        {
+            lastDailyExecution = DateOnly.FromDateTime(DateTime.Now);
+            return await Task.FromResult(false);
         }
     }
 }

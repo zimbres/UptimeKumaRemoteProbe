@@ -10,6 +10,8 @@ public class Configurations
     public string UpDependency { get; set; }
     public int Timeout { get; set; }
     public int Delay { get; set; }
+    public string WhoisApiUrl { get; set; }
+    public string WhoisApiToken { get; set; }
 }
 
 public class Endpoint
@@ -25,9 +27,12 @@ public class Endpoint
     public int CertificateExpiration { get; set; }
     public string ConnectionString { get; set; }
     public string Brand { get; set; }
+    public string Domain { get; set; }
 }
 
 public class ConnectionStrings
 {
     public string PGSQL { get; set; }
+    public string MYSQL { get; set; }
+    public string MSSQL { get; set; }
 }
