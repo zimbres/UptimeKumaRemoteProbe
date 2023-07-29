@@ -9,7 +9,7 @@ public class MonitorsService
     public MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
     {
         _logger = logger;
-        _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>(); ;
+        _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
     }
 
     public async Task<List<Monitors>> GetMonitorsAsync()
