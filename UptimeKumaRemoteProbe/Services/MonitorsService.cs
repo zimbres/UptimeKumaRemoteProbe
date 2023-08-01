@@ -4,7 +4,6 @@ public class MonitorsService
 {
     private readonly ILogger<MonitorsService> _logger;
     private readonly Configurations _configuration;
-    private JsonElement _monitors;
 
     public MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
     {
@@ -25,9 +24,11 @@ public class MonitorsService
 
             var socket = new SocketIO(_configuration.Url);
 
+            JsonElement monitorsRaw = new();
+
             socket.On("monitorList", response =>
             {
-                _monitors = response.GetValue();
+                monitorsRaw = response.GetValue();
             });
 
             socket.OnConnected += async (sender, e) =>
@@ -45,7 +46,7 @@ public class MonitorsService
             await socket.ConnectAsync();
 
             int round = 0;
-            while (_monitors.ValueKind == JsonValueKind.Undefined)
+            while (monitorsRaw.ValueKind == JsonValueKind.Undefined)
             {
                 round++;
                 await Task.Delay(1000);
@@ -53,7 +54,7 @@ public class MonitorsService
             }
 
             await socket.DisconnectAsync();
-            var monitors = JsonSerializer.Deserialize<Dictionary<string, Monitors>>(_monitors);
+            var monitors = JsonSerializer.Deserialize<Dictionary<string, Monitors>>(monitorsRaw);
             return monitors.Values.ToList();
         }
         catch
