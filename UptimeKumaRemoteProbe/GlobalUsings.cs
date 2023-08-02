@@ -4,6 +4,7 @@ global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.Http;
 global using SocketIOClient;
 global using System.Diagnostics;
+global using System.Globalization;
 global using System.Net.NetworkInformation;
 global using System.Net.Sockets;
 global using System.Reflection;

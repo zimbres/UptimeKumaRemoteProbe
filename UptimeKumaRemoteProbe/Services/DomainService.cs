@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace UptimeKumaRemoteProbe.Services;
+﻿namespace UptimeKumaRemoteProbe.Services;
 
 public class DomainService
 {
@@ -36,10 +34,9 @@ public class DomainService
             var content = await result.Content.ReadAsStringAsync();
             var domain = JsonSerializer.Deserialize<Domain>(content);
 
-            var now = DateTime.ParseExact(DateTime.UtcNow.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             var expiration = DateTime.ParseExact(domain.Expires, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
-            var expires = expiration - now;
+            var expires = expiration - DateTime.UtcNow;
             daysToExpire = expires.Days;
             closeToExpire = daysToExpire < 30;
 
