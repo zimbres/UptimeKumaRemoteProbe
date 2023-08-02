@@ -69,7 +69,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            zimbres/ukrp
+            zimbres/uptime-kuma-remote-probe
           flavor: |
             latest=false
           tags: |
