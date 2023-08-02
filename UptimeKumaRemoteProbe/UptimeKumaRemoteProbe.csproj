@@ -18,6 +18,7 @@
     <Authors>zimbres</Authors>
     <Product>Uptime Kuma Remote Probe</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
