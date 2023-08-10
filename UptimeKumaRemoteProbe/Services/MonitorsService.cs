@@ -15,14 +15,14 @@ public class MonitorsService
     {
         try
         {
+            using var socket = new SocketIO(_configuration.Url);
+
             var data = new
             {
                 username = _configuration.Username,
                 password = _configuration.Password,
                 token = ""
             };
-
-            var socket = new SocketIO(_configuration.Url);
 
             JsonElement monitorsRaw = new();
 
