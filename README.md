@@ -55,6 +55,6 @@ By default if the domain expiration date is < 30 days, probe will not push to UK
 
 ---
 
-Pré compiled package is available for Windows and Linux. It requires .Net Runtime 6.x.
+Pré compiled package is available for Windows and Linux. It requires .Net Runtime 7.x.
 
-[Download .NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+[Download .NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
