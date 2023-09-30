@@ -33,7 +33,7 @@ public class Domain
     public bool Registered { get; set; }
 
     [JsonPropertyName("dnssec")]
-    public string Dnssec { get; set; }
+    public bool Dnssec { get; set; }
 
     [JsonPropertyName("whoisserver")]
     public string Whoisserver { get; set; }
