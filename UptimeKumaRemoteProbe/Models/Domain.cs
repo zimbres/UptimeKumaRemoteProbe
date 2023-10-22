@@ -32,9 +32,6 @@ public class Domain
     [JsonPropertyName("registered")]
     public bool Registered { get; set; }
 
-    [JsonPropertyName("dnssec")]
-    public bool Dnssec { get; set; }
-
     [JsonPropertyName("whoisserver")]
     public string Whoisserver { get; set; }
 }
