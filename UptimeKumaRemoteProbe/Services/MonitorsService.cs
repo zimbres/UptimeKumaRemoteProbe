@@ -15,7 +15,7 @@ public class MonitorsService
     {
         try
         {
-            using var socket = new SocketIO(_configuration.Url);
+            using var socket = new SocketIOClient.SocketIO(_configuration.Url);
 
             var data = new
             {
@@ -28,14 +28,14 @@ public class MonitorsService
 
             socket.On("monitorList", response =>
             {
-                monitorsRaw = response.GetValue();
+                monitorsRaw = response.GetValue<JsonElement>();
             });
 
             socket.OnConnected += async (sender, e) =>
             {
                 await socket.EmitAsync("login", (ack) =>
                 {
-                    var result = JsonNode.Parse(ack.GetValue(0).ToString());
+                    var result = JsonNode.Parse(ack.GetValue<JsonElement>(0).ToString());
                     if (result["ok"].ToString() != "true")
                     {
                         _logger.LogError("Uptime Kuma login failure");

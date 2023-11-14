@@ -2,7 +2,6 @@
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.Http;
-global using SocketIOClient;
 global using System.Diagnostics;
 global using System.Globalization;
 global using System.Net.NetworkInformation;
