@@ -1,28 +1,21 @@
 ﻿namespace UptimeKumaRemoteProbe.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(Endpoint endpoint) : DbContext
 {
-    private readonly Endpoint _endpoint;
-
-    public ApplicationDbContext(Endpoint endpoint)
-    {
-        _endpoint = endpoint;
-    }
-
     public DbSet<DbVersion> DbVersion { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        switch (_endpoint.Brand)
+        switch (endpoint.Brand)
         {
             case "MSSQL":
-                optionsBuilder.UseSqlServer(_endpoint.ConnectionString);
+                optionsBuilder.UseSqlServer(endpoint.ConnectionString);
                 break;
             case "MYSQL":
-                optionsBuilder.UseMySQL(_endpoint.ConnectionString);
+                optionsBuilder.UseMySQL(endpoint.ConnectionString);
                 break;
             case "PGSQL":
-                optionsBuilder.UseNpgsql(_endpoint.ConnectionString);
+                optionsBuilder.UseNpgsql(endpoint.ConnectionString);
                 break;
             default:
                 break;

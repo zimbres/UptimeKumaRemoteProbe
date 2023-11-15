@@ -1,16 +1,7 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class TcpService
+public class TcpService(ILogger<TcpService> logger, PushService pushService)
 {
-    private readonly ILogger<TcpService> _logger;
-    private readonly PushService _pushService;
-
-    public TcpService(ILogger<TcpService> logger, PushService pushService)
-    {
-        _logger = logger;
-        _pushService = pushService;
-    }
-
     public async Task CheckTcpAsync(Endpoint endpoint)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -28,9 +19,9 @@ public class TcpService
 
         if (tcpClient.Connected)
         {
-            await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
-        _logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected}",
+        logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected}",
             endpoint.Destination, endpoint.Port, tcpClient.Connected);
 
         tcpClient.Dispose();

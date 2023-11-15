@@ -1,15 +1,8 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class MonitorsService
+public class MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
 {
-    private readonly ILogger<MonitorsService> _logger;
-    private readonly Configurations _configuration;
-
-    public MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
-    {
-        _logger = logger;
-        _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
-    }
+    private readonly Configurations _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
 
     public async Task<List<Monitors>> GetMonitorsAsync()
     {
@@ -38,7 +31,7 @@ public class MonitorsService
                     var result = JsonNode.Parse(ack.GetValue<JsonElement>(0).ToString());
                     if (result["ok"].ToString() != "true")
                     {
-                        _logger.LogError("Uptime Kuma login failure");
+                        logger.LogError("Uptime Kuma login failure");
                     }
                 }, data);
             };
@@ -59,7 +52,7 @@ public class MonitorsService
         }
         catch
         {
-            _logger.LogError("Error trying to get monitors");
+            logger.LogError("Error trying to get monitors");
             return null;
         }
     }

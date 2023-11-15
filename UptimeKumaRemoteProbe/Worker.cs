@@ -1,40 +1,19 @@
 namespace UptimeKumaRemoteProbe;
 
-public class Worker : BackgroundService
+public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
+    TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
+    DomainService domainService) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-    private readonly PingService _pingService;
-    private readonly HttpService _httpService;
-    private readonly TcpService _tcpService;
-    private readonly CertificateService _certificateService;
-    private readonly DbService _dbService;
-    private readonly MonitorsService _monitorsService;
-    private readonly Configurations _configurations;
-    private readonly DomainService _domainService;
+    private readonly Configurations _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
     private static DateOnly lastDailyExecution;
-
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
-        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
-        DomainService domainService)
-    {
-        _logger = logger;
-        _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
-        _pingService = pingService;
-        _httpService = httpService;
-        _tcpService = tcpService;
-        _certificateService = certificateService;
-        _dbService = dbService;
-        _monitorsService = monitorsService;
-        _domainService = domainService;
-    }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
         if (_configurations.UpDependency == "")
         {
-            _logger.LogError("Up Dependency is not set.");
+            logger.LogError("Up Dependency is not set.");
             Environment.Exit(0);
         }
 
@@ -51,13 +30,13 @@ public class Worker : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Network is unreachable. {ex}", ex.Message);
+                    logger.LogError("Network is unreachable. {ex}", ex.Message);
                 }
             }
 
             if (pingReply?.Status == IPStatus.Success)
             {
-                var monitors = await _monitorsService.GetMonitorsAsync();
+                var monitors = await monitorsService.GetMonitorsAsync();
                 if (monitors is not null)
                 {
                     var endpoints = ParseEndpoints(monitors);
@@ -66,7 +45,7 @@ public class Worker : BackgroundService
             }
             else
             {
-                _logger.LogError("Up Dependency is unreachable.");
+                logger.LogError("Up Dependency is unreachable.");
             }
             await Task.Delay(_configurations.Delay, stoppingToken);
         }
@@ -107,24 +86,24 @@ public class Worker : BackgroundService
             switch (item.Type)
             {
                 case "Ping":
-                    await _pingService.CheckPingAsync(item);
+                    await pingService.CheckPingAsync(item);
                     break;
                 case "Http":
-                    await _httpService.CheckHttpAsync(item);
+                    await httpService.CheckHttpAsync(item);
                     break;
                 case "Tcp":
-                    await _tcpService.CheckTcpAsync(item);
+                    await tcpService.CheckTcpAsync(item);
                     break;
                 case "Certificate":
-                    await _certificateService.CheckCertificateAsync(item);
+                    await certificateService.CheckCertificateAsync(item);
                     break;
                 case "Database":
                     item.ConnectionString = $"{_configurations.ConnectionStrings}.{item.Brand}";
-                    await _dbService.CheckDbAsync(item);
+                    await dbService.CheckDbAsync(item);
                     break;
                 case "Domain":
                     if (await CheckDailyExecutionAsync()) break;
-                    await _domainService.CheckDomainAsync(item);
+                    await domainService.CheckDomainAsync(item);
                     break;
                 default:
                     break;

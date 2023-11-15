@@ -1,16 +1,9 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class HealthCheckPublisher : IHealthCheckPublisher
+public class HealthCheckPublisher(ILogger<HealthCheckPublisher> logger) : IHealthCheckPublisher
 {
-    private readonly ILogger<HealthCheckPublisher> _logger;
-    private readonly string _fileName;
+    private readonly string _fileName = "./health";
     private HealthStatus _prevStatus = HealthStatus.Unhealthy;
-
-    public HealthCheckPublisher(ILogger<HealthCheckPublisher> logger)
-    {
-        _fileName = "./health";
-        _logger = logger;
-    }
 
     public Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
     {
@@ -22,7 +15,7 @@ public class HealthCheckPublisher : IHealthCheckPublisher
         else if (fileExists)
         {
             File.Delete(_fileName);
-            _logger.LogWarning("{status}", report.Status.ToString());
+            logger.LogWarning("{status}", report.Status.ToString());
         }
 
         _prevStatus = report.Status;
