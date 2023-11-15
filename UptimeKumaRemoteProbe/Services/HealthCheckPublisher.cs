@@ -15,7 +15,6 @@ public class HealthCheckPublisher : IHealthCheckPublisher
     public Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
     {
         var fileExists = _prevStatus == HealthStatus.Healthy;
-
         if (report.Status == HealthStatus.Healthy)
         {
             using var _ = File.Create(_fileName);

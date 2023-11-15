@@ -23,7 +23,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
         });
         services.RemoveAll<IHttpMessageHandlerBuilderFilter>(); //Disable HttpClient Logging
-        services.AddHealthChecks();
+        services.AddHealthChecks().AddCheck("HealthCheck", () => HealthCheckResult.Healthy());
         services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
         services.Configure<HealthCheckPublisherOptions>(options =>
         {
