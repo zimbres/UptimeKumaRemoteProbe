@@ -1,36 +1,34 @@
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddHttpClient("Default");
+builder.Services.AddHttpClient("IgnoreSSL")
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    return new HttpClientHandler
     {
-        services.AddHttpClient("Default");
-        services.AddHttpClient("IgnoreSSL")
-        .ConfigurePrimaryHttpMessageHandler(() =>
-        {
-            return new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
-            };
-        });
-        services.AddSingleton<PingService>();
-        services.AddSingleton<HttpService>();
-        services.AddSingleton<TcpService>();
-        services.AddSingleton<PushService>();
-        services.AddSingleton<DbService>();
-        services.AddSingleton<CertificateService>();
-        services.AddSingleton<MonitorsService>();
-        services.AddSingleton<DomainService>();
-        services.AddHostedService<Worker>().Configure<HostOptions>(options =>
-        {
-            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-        });
-        services.RemoveAll<IHttpMessageHandlerBuilderFilter>(); //Disable HttpClient Logging
-        services.AddHealthChecks().AddCheck("HealthCheck", () => HealthCheckResult.Healthy());
-        services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
-        services.Configure<HealthCheckPublisherOptions>(options =>
-        {
-            options.Delay = TimeSpan.FromSeconds(5);
-            options.Period = TimeSpan.FromSeconds(20);
-        });
-    })
-    .Build();
+        ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+    };
+});
+builder.Services.AddSingleton<PingService>();
+builder.Services.AddSingleton<HttpService>();
+builder.Services.AddSingleton<TcpService>();
+builder.Services.AddSingleton<PushService>();
+builder.Services.AddSingleton<DbService>();
+builder.Services.AddSingleton<CertificateService>();
+builder.Services.AddSingleton<MonitorsService>();
+builder.Services.AddSingleton<DomainService>();
+builder.Services.AddHostedService<Worker>().Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+builder.Services.RemoveAll<IHttpMessageHandlerBuilderFilter>(); //Disable HttpClient Logging
+builder.Services.AddHealthChecks().AddCheck("HealthCheck", () => HealthCheckResult.Healthy());
+builder.Services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
+builder.Services.Configure<HealthCheckPublisherOptions>(options =>
+{
+    options.Delay = TimeSpan.FromSeconds(5);
+    options.Period = TimeSpan.FromSeconds(20);
+});
 
-await host.RunAsync();
+
+var host = builder.Build();
+host.Run();
