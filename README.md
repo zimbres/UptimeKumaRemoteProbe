@@ -36,6 +36,9 @@ Ex:
 - Tag Name: "Method" / Tag Value: "GET"
 - Tag Name: "CertificateExpiration" / Tag Value: "7"
 
+![image](https://github.com/zimbres/UptimeKumaRemoteProbe/assets/29772043/a4a9fd07-4f33-4f4f-9c27-24b59be42b28)
+
+---
 Available monitors type are:
 
 - Ping
