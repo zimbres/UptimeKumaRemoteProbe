@@ -1,6 +1,6 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class DbService(ILogger<TcpService> logger, PushService pushService)
+public class DbService(ILogger<DbService> logger, PushService pushService)
 {
     public async Task CheckDbAsync(Endpoint endpoint)
     {

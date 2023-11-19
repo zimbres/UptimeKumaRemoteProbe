@@ -1,6 +1,6 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class DomainService(ILogger<HttpService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory,
+public class DomainService(ILogger<DomainService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory,
     PushService pushService, IConfiguration configuration)
 {
     private readonly Configurations _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
