@@ -2,7 +2,7 @@ namespace UptimeKumaRemoteProbe;
 
 public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
     TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
-    DomainService domainService) : BackgroundService
+    DomainService domainService, VersionService versionService) : BackgroundService
 {
     private readonly Configurations _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
     private static DateOnly lastDailyExecution;
@@ -10,6 +10,11 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+        if (await versionService.CheckVersionAsync())
+        {
+            Environment.Exit(0);
+        }
 
         if (_configurations.UpDependency == "")
         {

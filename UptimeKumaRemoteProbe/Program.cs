@@ -28,7 +28,7 @@ builder.Services.Configure<HealthCheckPublisherOptions>(options =>
     options.Delay = TimeSpan.FromSeconds(5);
     options.Period = TimeSpan.FromSeconds(20);
 });
-
-
+builder.Services.AddSingleton<VersionService>();
+    
 var host = builder.Build();
 host.Run();
