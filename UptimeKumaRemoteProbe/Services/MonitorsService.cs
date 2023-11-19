@@ -8,7 +8,10 @@ public class MonitorsService(ILogger<MonitorsService> logger, IConfiguration con
     {
         try
         {
-            using var socket = new SocketIOClient.SocketIO(_configuration.Url);
+            using var socket = new SocketIOClient.SocketIO(_configuration.Url, new SocketIOClient.SocketIOOptions
+            {
+                ReconnectionAttempts = 3
+            });
 
             var data = new
             {
