@@ -65,6 +65,11 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _configurations.ProbeName;
             if (monitor.Active && monitor.Maintenance is false && monitor.Type == "push" && probe)
             {
+                if (monitor.Interval * 1000 < _configurations.Delay)
+                {
+                    logger.LogWarning($"Task: [{monitor.Name}] Interval: {monitor.Interval * 1000}ms lt Delay: {_configurations.Delay}ms");
+                }
+
                 var endpoint = new Endpoint
                 {
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
