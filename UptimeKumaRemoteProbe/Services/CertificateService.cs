@@ -24,7 +24,7 @@ public class CertificateService(ILogger<CertificateService> logger, PushService 
 
             if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
-                await pushService.PushAsync(endpoint.PushUri, (notAfter - DateTime.UtcNow).Days);
+                await pushService.PushUpAsync(endpoint.PushUpUri, (notAfter - DateTime.UtcNow).Days);
                 logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode}",
                     endpoint.Destination, result.StatusCode);
                 return;
