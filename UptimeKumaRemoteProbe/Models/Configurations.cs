@@ -21,6 +21,7 @@ public class Endpoint
     public string Destination { get; set; }
     public int Port { get; set; }
     public string Method { get; set; }
+    public int SuccessStatusCode { get; set; }
     public string Keyword { get; set; }
     public bool IgnoreSSL { get; set; }
     public int Timeout { get; set; }

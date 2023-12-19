@@ -73,6 +73,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
                     PushUri = new Uri($"{_configurations.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
+                    SuccessStatusCode = int.Parse(monitor.Tags.Where(w => w.Name == "SuccessStatusCode").Select(s => s.Value).FirstOrDefault() ?? "-1"),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Port = int.Parse(monitor.Tags.Where(w => w.Name == "Port").Select(s => s.Value).FirstOrDefault() ?? "0"),
                     Domain = monitor.Tags.Where(w => w.Name == "Domain").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
