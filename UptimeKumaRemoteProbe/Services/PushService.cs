@@ -2,7 +2,7 @@
 
 public class PushService(ILogger<PushService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory)
 {
-    public async Task PushAsync(Uri uri, long elapsedMilliseconds)
+    public async Task PushUpAsync(Uri uri, long elapsedMilliseconds)
     {
         httpClient = httpClientFactory.CreateClient();
 
@@ -12,7 +12,21 @@ public class PushService(ILogger<PushService> logger, HttpClient httpClient, IHt
         }
         catch
         {
-            logger.LogError("Error trying to push results to {uri}", uri);
+            logger.LogError($"Error trying to push results to {uri}");
+        }
+    }
+
+    public async Task PushDownAsync(Uri uri, long elapsedMilliseconds, string msg = "")
+    {
+        httpClient = httpClientFactory.CreateClient();
+
+        try
+        {
+            await httpClient.GetAsync($"{uri}{elapsedMilliseconds}&msg={msg ?? ""}");
+        }
+        catch
+        {
+            logger.LogError($"Error trying to push results to {uri}");
         }
     }
 }

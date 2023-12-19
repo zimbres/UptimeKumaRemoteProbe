@@ -19,7 +19,7 @@ public class TcpService(ILogger<TcpService> logger, PushService pushService)
 
         if (tcpClient.Connected)
         {
-            await pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await pushService.PushUpAsync(endpoint.PushUpUri, stopwatch.ElapsedMilliseconds);
         }
         logger.LogInformation("Tcp: {endpoint.Destination}:{endpoint.Port} Success={tcpClient.Connected}",
             endpoint.Destination, endpoint.Port, tcpClient.Connected);

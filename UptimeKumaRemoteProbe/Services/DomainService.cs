@@ -37,7 +37,7 @@ public class DomainService(ILogger<DomainService> logger, HttpClient httpClient,
 
         if (!closeToExpire && result is not null && result.IsSuccessStatusCode)
         {
-            await pushService.PushAsync(endpoint.PushUri, daysToExpire);
+            await pushService.PushUpAsync(endpoint.PushUpUri, daysToExpire);
         }
     }
 }

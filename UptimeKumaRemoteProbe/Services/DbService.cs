@@ -35,7 +35,7 @@ public class DbService(ILogger<DbService> logger, PushService pushService)
 
         if (status is not null)
         {
-            await pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await pushService.PushUpAsync(endpoint.PushUpUri, stopwatch.ElapsedMilliseconds);
         }
     }
 }

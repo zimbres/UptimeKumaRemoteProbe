@@ -17,7 +17,8 @@ public class Configurations
 public class Endpoint
 {
     public string Type { get; set; }
-    public Uri PushUri { get; set; }
+    public Uri PushUpUri { get; set; }
+    public Uri PushDownUri { get; set; }
     public string Destination { get; set; }
     public int Port { get; set; }
     public string Method { get; set; }
