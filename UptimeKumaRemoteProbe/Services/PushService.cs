@@ -12,7 +12,7 @@ public class PushService(ILogger<PushService> logger, HttpClient httpClient, IHt
         }
         catch
         {
-            logger.LogError($"Error trying to push results to {uri}");
+            logger.LogError("Error trying to push results to {uri}", uri);
         }
     }
 
@@ -26,7 +26,7 @@ public class PushService(ILogger<PushService> logger, HttpClient httpClient, IHt
         }
         catch
         {
-            logger.LogError($"Error trying to push results to {uri}");
+            logger.LogError("Error trying to push results to {uri}", uri);
         }
     }
 }

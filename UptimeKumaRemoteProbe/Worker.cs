@@ -67,7 +67,8 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             {
                 if (monitor.Interval * 1000 < _configurations.Delay)
                 {
-                    logger.LogWarning($"Task: [{monitor.Name}] Interval: {monitor.Interval * 1000}ms lt Delay: {_configurations.Delay}ms");
+                    logger.LogWarning("Task: [{monitorName}] Interval: {monitorInterval}ms lt Delay: {Delay}ms"
+                        , monitor.Name, monitor.Interval * 1000, _configurations.Delay);
                 }
 
                 var endpoint = new Endpoint

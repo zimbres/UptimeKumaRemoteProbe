@@ -17,13 +17,14 @@ public class HttpService(ILogger<HttpService> logger, HttpClient httpClient, IHt
             result = await httpClient.GetAsync(endpoint.Destination);
             content = await result.Content.ReadAsStringAsync();
 
-            logger.LogInformation($"Http: {endpoint.Destination} {result.StatusCode}");
+            logger.LogInformation("Http: {endpoint.Destination} {result.StatusCode}",
+                endpoint.Destination, result.StatusCode);
 
             if (endpoint.Keyword != "" && !content.Contains(endpoint.Keyword)) throw new ArgumentNullException(nameof(endpoint), "Keyword not found.");
         }
         catch
         {
-            logger.LogError($"Error trying get {endpoint.Destination}");
+            logger.LogError("Error trying get {endpoint.Destination}", endpoint.Destination);
             return;
         }
 
