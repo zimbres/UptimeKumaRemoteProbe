@@ -1,22 +1,20 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class MonitorsService(ILogger<MonitorsService> logger, IConfiguration configuration)
+public class MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings)
 {
-    private readonly Configurations _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
-
     public async Task<List<Monitors>> GetMonitorsAsync()
     {
         try
         {
-            using var socket = new SocketIOClient.SocketIO(_configuration.Url, new SocketIOClient.SocketIOOptions
+            using var socket = new SocketIOClient.SocketIO(appSettings.Url, new SocketIOClient.SocketIOOptions
             {
                 ReconnectionAttempts = 3
             });
 
             var data = new
             {
-                username = _configuration.Username,
-                password = _configuration.Password,
+                username = appSettings.Username,
+                password = appSettings.Password,
                 token = ""
             };
 

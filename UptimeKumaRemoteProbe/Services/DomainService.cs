@@ -1,10 +1,8 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
 public class DomainService(ILogger<DomainService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory,
-    PushService pushService, IConfiguration configuration)
+    PushService pushService, AppSettings appSettings)
 {
-    private readonly Configurations _configuration = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
-
     public async Task CheckDomainAsync(Endpoint endpoint)
     {
         httpClient = httpClientFactory.CreateClient(endpoint.IgnoreSSL ? "IgnoreSSL" : "Default");
@@ -16,8 +14,8 @@ public class DomainService(ILogger<DomainService> logger, HttpClient httpClient,
         try
         {
             httpClient.DefaultRequestHeaders.Clear();
-            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"TOKEN={_configuration.WhoisApiToken}");
-            result = await httpClient.GetAsync($"{_configuration.WhoisApiUrl.Replace("keep.this", endpoint.Domain)}");
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"TOKEN={appSettings.WhoisApiToken}");
+            result = await httpClient.GetAsync($"{appSettings.WhoisApiUrl.Replace("keep.this", endpoint.Domain)}");
             var content = await result.Content.ReadAsStringAsync();
             var domain = JsonSerializer.Deserialize<Domain>(content);
 

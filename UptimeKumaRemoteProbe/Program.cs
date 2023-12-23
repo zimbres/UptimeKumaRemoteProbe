@@ -29,6 +29,7 @@ builder.Services.Configure<HealthCheckPublisherOptions>(options =>
     options.Period = TimeSpan.FromSeconds(20);
 });
 builder.Services.AddSingleton<VersionService>();
+builder.Services.AddSingleton<AppSettings>();
     
 var host = builder.Build();
 host.Run();

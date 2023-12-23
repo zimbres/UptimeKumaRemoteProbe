@@ -3,7 +3,8 @@
     "UptimeKumaRemoteProbe": {
       "commandName": "Project",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "UseEnvironmentVariables": "false"
       },
       "dotnetRunMessages": true
     },

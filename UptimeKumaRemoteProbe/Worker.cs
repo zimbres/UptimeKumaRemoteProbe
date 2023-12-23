@@ -2,7 +2,7 @@ namespace UptimeKumaRemoteProbe;
 
 public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
     TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
-    DomainService domainService, VersionService versionService) : BackgroundService
+    DomainService domainService, VersionService versionService, AppSettings appSettings) : BackgroundService
 {
     private readonly Configurations _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
     private static DateOnly lastDailyExecution;
@@ -16,7 +16,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             Environment.Exit(0);
         }
 
-        if (_configurations.UpDependency == "")
+        if (appSettings.UpDependency == "")
         {
             logger.LogError("Up Dependency is not set.");
             Environment.Exit(0);
@@ -27,11 +27,11 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_configurations.UpDependency != "")
+            if (appSettings.UpDependency != "")
             {
                 try
                 {
-                    pingReply = ping.Send(_configurations.UpDependency, _configurations.Timeout);
+                    pingReply = ping.Send(appSettings.UpDependency, appSettings.Timeout);
                 }
                 catch (Exception ex)
                 {
@@ -52,17 +52,24 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             {
                 logger.LogError("Up Dependency is unreachable.");
             }
-            await Task.Delay(_configurations.Delay, stoppingToken);
+            await Task.Delay(appSettings.Delay, stoppingToken);
         }
     }
 
     private List<Endpoint> ParseEndpoints(List<Monitors> monitors)
     {
         var endpoints = new List<Endpoint>();
+        bool hasProbeMonitor = false;
 
         foreach (var monitor in monitors)
         {
-            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _configurations.ProbeName;
+            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == appSettings.ProbeName;
+
+            if (probe)
+            {
+                hasProbeMonitor = true;
+            }
+
             if (monitor.Active && monitor.Maintenance is false && monitor.Type == "push" && probe)
             {
                 var endpoint = new Endpoint
@@ -70,7 +77,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Timeout = 1000,
-                    PushUri = new Uri($"{_configurations.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
+                    PushUri = new Uri($"{appSettings.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
@@ -81,6 +88,12 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
                 endpoints.Add(endpoint);
             }
         }
+
+        if (!hasProbeMonitor)
+        {
+            logger.LogWarning("No monitors with the specified Probe tag and value {_configurations.ProbeName} were found.", _configurations.ProbeName);
+        }
+
         return endpoints;
     }
 
