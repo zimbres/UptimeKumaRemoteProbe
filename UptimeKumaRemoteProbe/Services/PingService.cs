@@ -1,7 +1,16 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class PingService(ILogger<PingService> logger, PushService pushService)
+public class PingService
 {
+    private readonly ILogger<PingService> _logger;
+    private readonly PushService _pushService;
+
+    public PingService(ILogger<PingService> logger, PushService pushService)
+    {
+        _logger = logger;
+        _pushService = pushService;
+    }
+
     public async Task CheckPingAsync(Endpoint endpoint)
     {
         Ping ping = new();
@@ -18,8 +27,8 @@ public class PingService(ILogger<PingService> logger, PushService pushService)
 
         if (pingReply?.Status == IPStatus.Success)
         {
-            await pushService.PushAsync(endpoint.PushUri, pingReply.RoundtripTime);
+            await _pushService.PushAsync(endpoint.PushUri, pingReply.RoundtripTime);
         }
-        logger.LogInformation("Ping: {pingReply.Address} {pingReply.Status}", pingReply?.Address, pingReply?.Status);
+        _logger.LogInformation("Ping: {pingReply.Address} {pingReply.Status}", pingReply?.Address, pingReply?.Status);
     }
 }

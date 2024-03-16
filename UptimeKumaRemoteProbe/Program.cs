@@ -30,6 +30,6 @@ builder.Services.Configure<HealthCheckPublisherOptions>(options =>
 });
 builder.Services.AddSingleton<VersionService>();
 builder.Services.AddSingleton<AppSettings>();
-    
+
 var host = builder.Build();
 host.Run();

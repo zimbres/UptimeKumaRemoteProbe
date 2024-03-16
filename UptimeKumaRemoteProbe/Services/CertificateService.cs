@@ -1,7 +1,20 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class CertificateService(ILogger<CertificateService> logger, PushService pushService, IHttpClientFactory httpClientFactory, HttpClient httpClient)
+public class CertificateService
 {
+    private readonly ILogger<CertificateService> _logger;
+    private readonly PushService _pushService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private HttpClient _httpClient;
+
+    public CertificateService(ILogger<CertificateService> logger, PushService pushService, IHttpClientFactory httpClientFactory, HttpClient httpClient)
+    {
+        _logger = logger;
+        _pushService = pushService;
+        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
+    }
+
     public async Task CheckCertificateAsync(Endpoint endpoint)
     {
         DateTime notAfter = DateTime.UtcNow;
@@ -15,25 +28,25 @@ public class CertificateService(ILogger<CertificateService> logger, PushService 
             }
         };
 
-        httpClient = httpClientFactory.CreateClient("IgnoreSSL");
-        httpClient = new HttpClient(httpClientHandler);
+        _httpClient = _httpClientFactory.CreateClient("IgnoreSSL");
+        _httpClient = new HttpClient(httpClientHandler);
 
         try
         {
-            var result = await httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method ?? "Head"), endpoint.Destination));
+            var result = await _httpClient.SendAsync(new HttpRequestMessage(new HttpMethod(endpoint.Method ?? "Head"), endpoint.Destination));
 
             if (notAfter >= DateTime.UtcNow.AddDays(endpoint.CertificateExpiration))
             {
-                await pushService.PushAsync(endpoint.PushUri, (notAfter - DateTime.UtcNow).Days);
-                logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode}",
+                await _pushService.PushAsync(endpoint.PushUri, (notAfter - DateTime.UtcNow).Days);
+                _logger.LogInformation("Certificate: {endpoint.Destination} {result.StatusCode}",
                     endpoint.Destination, result.StatusCode);
                 return;
             }
-            logger.LogWarning("Certificate: {endpoint.Destination} expiration date: {notAfter}", endpoint.Destination, notAfter);
+            _logger.LogWarning("Certificate: {endpoint.Destination} expiration date: {notAfter}", endpoint.Destination, notAfter);
         }
         catch
         {
-            logger.LogError("Error trying get {endpoint.Destination}", endpoint.Destination);
+            _logger.LogError("Error trying get {endpoint.Destination}", endpoint.Destination);
         }
     }
 }

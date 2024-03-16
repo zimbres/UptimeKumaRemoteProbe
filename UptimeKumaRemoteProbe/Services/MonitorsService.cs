@@ -1,20 +1,29 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings)
+public class MonitorsService
 {
+    private readonly ILogger<MonitorsService> _logger;
+    private readonly AppSettings _appSettings;
+
+    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings)
+    {
+        _logger = logger;
+        _appSettings = appSettings;
+    }
+
     public async Task<List<Monitors>> GetMonitorsAsync()
     {
         try
         {
-            using var socket = new SocketIOClient.SocketIO(appSettings.Url, new SocketIOClient.SocketIOOptions
+            using var socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
             {
                 ReconnectionAttempts = 3
             });
 
             var data = new
             {
-                username = appSettings.Username,
-                password = appSettings.Password,
+                username = _appSettings.Username,
+                password = _appSettings.Password,
                 token = ""
             };
 
@@ -32,7 +41,7 @@ public class MonitorsService(ILogger<MonitorsService> logger, AppSettings appSet
                     var result = JsonNode.Parse(ack.GetValue<JsonElement>(0).ToString());
                     if (result["ok"].ToString() != "true")
                     {
-                        logger.LogError("Uptime Kuma login failure");
+                        _logger.LogError("Uptime Kuma login failure");
                     }
                 }, data);
             };
@@ -53,7 +62,7 @@ public class MonitorsService(ILogger<MonitorsService> logger, AppSettings appSet
         }
         catch
         {
-            logger.LogError("Error trying to get monitors");
+            _logger.LogError("Error trying to get monitors");
             return null;
         }
     }

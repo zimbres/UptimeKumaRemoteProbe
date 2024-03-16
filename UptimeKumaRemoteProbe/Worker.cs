@@ -1,24 +1,49 @@
 namespace UptimeKumaRemoteProbe;
 
-public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingService pingService, HttpService httpService,
-    TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
-    DomainService domainService, VersionService versionService, AppSettings appSettings) : BackgroundService
+public class Worker : BackgroundService
 {
-    private readonly Configurations _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
+    private readonly ILogger<Worker> _logger;
+    private readonly Configurations _configurations;
+    private readonly PingService _pingService;
+    private readonly HttpService _httpService;
+    private readonly TcpService _tcpService;
+    private readonly CertificateService _certificateService;
+    private readonly DbService _dbService;
+    private readonly MonitorsService _monitorsService;
+    private readonly AppSettings _appSettings;
+    private readonly DomainService _domainService;
+    private readonly VersionService _versionService;
     private static DateOnly lastDailyExecution;
+
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, AppSettings appSettings, PingService pingService, HttpService httpService,
+        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
+        DomainService domainService, VersionService versionService)
+    {
+        _logger = logger;
+        _configurations = configuration.GetSection(nameof(Configurations)).Get<Configurations>();
+        _appSettings = appSettings;
+        _pingService = pingService;
+        _httpService = httpService;
+        _tcpService = tcpService;
+        _certificateService = certificateService;
+        _dbService = dbService;
+        _monitorsService = monitorsService;
+        _domainService = domainService;
+        _versionService = versionService;
+    }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        _logger.LogWarning("App version: {version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-        if (await versionService.CheckVersionAsync())
+        if (await _versionService.CheckVersionAsync())
         {
             Environment.Exit(0);
         }
 
-        if (appSettings.UpDependency == "")
+        if (_appSettings.UpDependency == "")
         {
-            logger.LogError("Up Dependency is not set.");
+            _logger.LogError("Up Dependency is not set.");
             Environment.Exit(0);
         }
 
@@ -27,21 +52,21 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (appSettings.UpDependency != "")
+            if (_appSettings.UpDependency != "")
             {
                 try
                 {
-                    pingReply = ping.Send(appSettings.UpDependency, appSettings.Timeout);
+                    pingReply = ping.Send(_appSettings.UpDependency, _appSettings.Timeout);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Network is unreachable. {ex}", ex.Message);
+                    _logger.LogError("Network is unreachable. {ex}", ex.Message);
                 }
             }
 
             if (pingReply?.Status == IPStatus.Success)
             {
-                var monitors = await monitorsService.GetMonitorsAsync();
+                var monitors = await _monitorsService.GetMonitorsAsync();
                 if (monitors is not null)
                 {
                     var endpoints = ParseEndpoints(monitors);
@@ -50,9 +75,9 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             }
             else
             {
-                logger.LogError("Up Dependency is unreachable.");
+                _logger.LogError("Up Dependency is unreachable.");
             }
-            await Task.Delay(appSettings.Delay, stoppingToken);
+            await Task.Delay(_appSettings.Delay, stoppingToken);
         }
     }
 
@@ -63,7 +88,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
 
         foreach (var monitor in monitors)
         {
-            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == appSettings.ProbeName;
+            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _appSettings.ProbeName;
 
             if (probe)
             {
@@ -77,7 +102,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
                     Type = monitor.Tags.Where(w => w.Name == "Type").Select(s => s.Value).First(),
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Timeout = 1000,
-                    PushUri = new Uri($"{appSettings.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
+                    PushUri = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
@@ -91,7 +116,7 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
 
         if (!hasProbeMonitor)
         {
-            logger.LogWarning("No monitors with the specified Probe tag and value {_configurations.ProbeName} were found.", _configurations.ProbeName);
+            _logger.LogWarning("No monitors with the specified Probe tag and value {_configurations.ProbeName} were found.", _appSettings.ProbeName);
         }
 
         return endpoints;
@@ -104,24 +129,24 @@ public class Worker(ILogger<Worker> logger, IConfiguration configuration, PingSe
             switch (item.Type)
             {
                 case "Ping":
-                    await pingService.CheckPingAsync(item);
+                    await _pingService.CheckPingAsync(item);
                     break;
                 case "Http":
-                    await httpService.CheckHttpAsync(item);
+                    await _httpService.CheckHttpAsync(item);
                     break;
                 case "Tcp":
-                    await tcpService.CheckTcpAsync(item);
+                    await _tcpService.CheckTcpAsync(item);
                     break;
                 case "Certificate":
-                    await certificateService.CheckCertificateAsync(item);
+                    await _certificateService.CheckCertificateAsync(item);
                     break;
                 case "Database":
                     item.ConnectionString = $"{_configurations.ConnectionStrings}.{item.Brand}";
-                    await dbService.CheckDbAsync(item);
+                    await _dbService.CheckDbAsync(item);
                     break;
                 case "Domain":
                     if (await CheckDailyExecutionAsync()) break;
-                    await domainService.CheckDomainAsync(item);
+                    await _domainService.CheckDomainAsync(item);
                     break;
                 default:
                     break;

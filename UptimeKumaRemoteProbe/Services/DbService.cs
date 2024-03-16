@@ -1,7 +1,16 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class DbService(ILogger<DbService> logger, PushService pushService)
+public class DbService
 {
+    private readonly ILogger<DbService> _logger;
+    private readonly PushService _pushService;
+
+    public DbService(ILogger<DbService> logger, PushService pushService)
+    {
+        _logger = logger;
+        _pushService = pushService;
+    }
+
     public async Task CheckDbAsync(Endpoint endpoint)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -24,18 +33,18 @@ public class DbService(ILogger<DbService> logger, PushService pushService)
                     status = dbContext.DbVersion?.FromSqlRaw("Select Version()").ToString();
                     break;
                 default:
-                    logger.LogError("Brand must be MSSQL, MYSQL or PGSQL");
+                    _logger.LogError("Brand must be MSSQL, MYSQL or PGSQL");
                     break;
             }
         }
         catch
         {
-            logger.LogError("Error trying get {endpoint.Brand}", endpoint.Brand);
+            _logger.LogError("Error trying get {endpoint.Brand}", endpoint.Brand);
         }
 
         if (status is not null)
         {
-            await pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
         }
     }
 }
