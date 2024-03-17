@@ -1,7 +1,5 @@
 [![Publish](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/dotnet.yml/badge.svg?event=release)](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/dotnet.yml) [![.CodeQL](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/codeql-analysis.yml)
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=zimbres_UptimeKumaRemoteProbe)](https://sonarcloud.io/summary/new_code?id=zimbres_UptimeKumaRemoteProbe)
-
 
 # Uptime Kuma Remote Probe
 
