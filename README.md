@@ -11,6 +11,7 @@
 
 >https://hub.docker.com/r/zimbres/uptime-kuma-remote-probe
 
+Be aware : If you use the :latest tag, it doesn't point to the latest version of UK. The latest version is 6.0.0
 ---
 
 Services configuration is done by editing the file appsettings.json and restarting application.
@@ -21,7 +22,7 @@ Services configuration is done by editing the file appsettings.json and restarti
 
 ---
 
-From version > 3.0 the services configuration is not done by adding it to appsettings.json, services to be executed on the probe will be auto discovered by tags set in UK.
+**Please Note** : From version > 3.0 the services configuration is not done by adding it to appsettings.json, services to be executed on the probe will be auto discovered by tags set in UK.
 
 Username and Password for UK need to be set on appsettings.json "Configurations.Username/Password" also UK Url. Account with 2FA is not supported.
 
@@ -33,6 +34,7 @@ Ex:
 - Tag Name: "Domain" / Tag Value: "domain.com"
 - Tag Name: "Method" / Tag Value: "GET"
 - Tag Name: "CertificateExpiration" / Tag Value: "7"
+- Tag Name: "IgnoreSSL" / Tag Value: "False"
 
 ![image](https://github.com/zimbres/UptimeKumaRemoteProbe/assets/29772043/a4a9fd07-4f33-4f4f-9c27-24b59be42b28)
 
