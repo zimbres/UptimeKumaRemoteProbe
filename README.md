@@ -11,7 +11,6 @@
 
 >https://hub.docker.com/r/zimbres/uptime-kuma-remote-probe
 
->**Be aware** : If you use the :latest tag, it doesn't point to the latest version of UK. The latest version is 6.0.2
 
 ---
 

@@ -71,7 +71,7 @@ jobs:
           images: |
             zimbres/uptime-kuma-remote-probe
           flavor: |
-            latest=false
+            latest=true
           tags: |
             type=ref,event=tag
 
