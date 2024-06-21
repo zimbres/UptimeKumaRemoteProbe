@@ -11,9 +11,6 @@ public class Domain
     [JsonPropertyName("idnName")]
     public string IdnName { get; set; }
 
-    [JsonPropertyName("status")]
-    public string Status { get; set; }
-
     [JsonPropertyName("nameserver")]
     public string[] Nameserver { get; set; }
 
