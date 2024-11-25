@@ -44,10 +44,15 @@ public class HttpService
 
         if (result is not null )
         {
-            string status = result.StatusCode == HttpStatusCode.OK ? "up" : "down";
-            var pushUri_http = new Uri($"{endpoint.PushUri_http}status={status}&msg={result.StatusCode}&ping=");
-
-            await _pushService.PushAsync(PushUri_http, stopwatch.ElapsedMilliseconds);
+            if (endpoint.AllResults && !result.IsSuccessStatusCode)
+            {
+                var pushUri = new Uri($"{endpoint.BasePushUri}status=down&msg={result.StatusCode}&ping=");
+                await _pushService.PushAsync(pushUri, stopwatch.ElapsedMilliseconds);
+            }
+            else if (result.IsSuccessStatusCode)
+            {
+                await _pushService.PushAsync(endpoint.PushUri, stopwatch.ElapsedMilliseconds);
+            }
         }
     }
 }

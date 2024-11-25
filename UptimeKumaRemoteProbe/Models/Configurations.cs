@@ -18,7 +18,7 @@ public class Endpoint
 {
     public string Type { get; set; }
     public Uri PushUri { get; set; }
-    public Uri PushUri_http { get; set; }
+    public Uri BasePushUri { get; set; }
     public string Destination { get; set; }
     public int Port { get; set; }
     public string Method { get; set; }
@@ -29,6 +29,7 @@ public class Endpoint
     public string ConnectionString { get; set; }
     public string Brand { get; set; }
     public string Domain { get; set; }
+    public string AllResults { get; set; }
 }
 
 public class ConnectionStrings

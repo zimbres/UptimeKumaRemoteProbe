@@ -103,7 +103,7 @@ public class Worker : BackgroundService
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Timeout = 1000,
                     PushUri = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
-                    PushUri_http = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?"),
+                    BasePushUri = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?"),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
@@ -111,6 +111,7 @@ public class Worker : BackgroundService
                     Domain = monitor.Tags.Where(w => w.Name == "Domain").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3"),
                     IgnoreSSL = bool.Parse(monitor.Tags.Where(w => w.Name == "IgnoreSSL").Select(s => s.Value).FirstOrDefault() ?? "False")
+                    AllResults = = bool.Parse(monitor.Tags.Where(w => w.Name == "AllResults").Select(s => s.Value).FirstOrDefault() ?? "False")
                 };
                 endpoints.Add(endpoint);
             }

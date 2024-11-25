@@ -35,6 +35,7 @@ Ex:
 - Tag Name: "Method" / Tag Value: "GET"
 - Tag Name: "CertificateExpiration" / Tag Value: "7"
 - Tag Name: "IgnoreSSL" / Tag Value: "False"
+- Tag Name: "AllResults" / Tag Value: "False"
 
 ![image](https://github.com/zimbres/UptimeKumaRemoteProbe/assets/29772043/a4a9fd07-4f33-4f4f-9c27-24b59be42b28)
 
@@ -42,7 +43,9 @@ Ex:
 Available monitors type are:
 
 - Ping
-- Http, with or whithout Keyword. Tag Name "Keyword" must be applied to also check this
+- Http
+    - with or whithout Keyword. Tag Name "Keyword" must be applied to also check this
+    - When "AllResults" is True, both success and failure statuses are reported, by default set to False
 - Tcp
 - Certificate
 - Database
