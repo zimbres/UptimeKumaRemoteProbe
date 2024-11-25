@@ -29,7 +29,7 @@ public class Endpoint
     public string ConnectionString { get; set; }
     public string Brand { get; set; }
     public string Domain { get; set; }
-    public string AllResults { get; set; }
+    public bool AllResults { get; set; }
 }
 
 public class ConnectionStrings
