@@ -111,7 +111,7 @@ public class Worker : BackgroundService
                     Domain = monitor.Tags.Where(w => w.Name == "Domain").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     CertificateExpiration = int.Parse(monitor.Tags.Where(w => w.Name == "CertificateExpiration").Select(s => s.Value).FirstOrDefault() ?? "3"),
                     IgnoreSSL = bool.Parse(monitor.Tags.Where(w => w.Name == "IgnoreSSL").Select(s => s.Value).FirstOrDefault() ?? "False"),
-                    AllResults = = bool.Parse(monitor.Tags.Where(w => w.Name == "AllResults").Select(s => s.Value).FirstOrDefault() ?? "False")
+                    AllResults = bool.Parse(monitor.Tags.Where(w => w.Name == "AllResults").Select(s => s.Value).FirstOrDefault() ?? "False")
                 };
                 endpoints.Add(endpoint);
             }
