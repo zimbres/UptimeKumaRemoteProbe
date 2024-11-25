@@ -103,7 +103,7 @@ public class Worker : BackgroundService
                     Destination = monitor.Tags.Where(w => w.Name == "Address").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Timeout = 1000,
                     PushUri = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?status=up&msg=OK&ping="),
-                    PushUri_http = = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?"),
+                    PushUri_http = new Uri($"{_appSettings.Url}api/push/{monitor.PushToken}?"),
                     Keyword = monitor.Tags.Where(w => w.Name == "Keyword").Select(s => s.Value).FirstOrDefault() ?? string.Empty,
                     Method = monitor.Tags.Where(w => w.Name == "Method").Select(s => s.Value).FirstOrDefault(),
                     Brand = monitor.Tags.Where(w => w.Name == "Brand").Select(s => s.Value).FirstOrDefault() ?? string.Empty,

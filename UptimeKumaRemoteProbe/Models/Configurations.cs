@@ -18,6 +18,7 @@ public class Endpoint
 {
     public string Type { get; set; }
     public Uri PushUri { get; set; }
+    public Uri PushUri_http { get; set; }
     public string Destination { get; set; }
     public int Port { get; set; }
     public string Method { get; set; }

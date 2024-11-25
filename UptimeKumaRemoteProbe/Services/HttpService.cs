@@ -1,4 +1,5 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
+using System.Net;
 
 public class HttpService
 {
@@ -43,7 +44,7 @@ public class HttpService
 
         if (result is not null )
         {
-            string status = result.StatusCode == "OK" ? "up" : "down";
+            string status = result.StatusCode == HttpStatusCode.OK ? "up" : "down";
             var pushUri_http = new Uri($"{endpoint.PushUri_http}status={status}&msg={result.StatusCode}&ping=");
 
             await _pushService.PushAsync(PushUri_http, stopwatch.ElapsedMilliseconds);
