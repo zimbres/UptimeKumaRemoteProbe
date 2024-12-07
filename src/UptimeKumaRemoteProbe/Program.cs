@@ -1,4 +1,6 @@
 var builder = Host.CreateApplicationBuilder(args);
+
+builder.AddServiceDefaults();
 builder.Services.AddHttpClient("Default");
 builder.Services.AddHttpClient("IgnoreSSL")
 .ConfigurePrimaryHttpMessageHandler(() =>
