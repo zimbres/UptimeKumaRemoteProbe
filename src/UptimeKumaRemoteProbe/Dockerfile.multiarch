@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["UptimeKumaRemoteProbe.csproj", "./"]
-RUN dotnet restore "./UptimeKumaRemoteProbe.csproj"
+COPY ["src/UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj", "src/UptimeKumaRemoteProbe/"]
+RUN dotnet restore "./src/UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj"
 COPY . .
 
 ARG TARGETPLATFORM
@@ -13,7 +13,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
     RID=linux-arm ; \
     fi \
-    && dotnet publish "UptimeKumaRemoteProbe.csproj" -c Release -o /app/publish -r $RID --self-contained false
+    && dotnet publish "src/UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj" -c Release -o /app/publish -r $RID --self-contained false
 
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
 WORKDIR /app
