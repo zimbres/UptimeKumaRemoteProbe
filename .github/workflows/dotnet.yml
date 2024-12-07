@@ -42,7 +42,7 @@ jobs:
           tag=$(git describe --tags --abbrev=0)
           release_name="UptimeKumaRemoteProbe-$tag-${{ matrix.target }}"
 
-          dotnet publish UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj --framework net8.0 --runtime "${{ matrix.target }}" --no-self-contained -p:PublishSingleFile=true -c Release -o "$release_name"
+          dotnet publish src/UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj --framework net8.0 --runtime "${{ matrix.target }}" --no-self-contained -p:PublishSingleFile=true -c Release -o "$release_name"
 
           if [ "${{ matrix.target }}" == "win-x64" ]; then
             7z a -tzip "${release_name}.zip" "./${release_name}/*"
@@ -94,8 +94,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: UptimeKumaRemoteProbe
-          file: UptimeKumaRemoteProbe/Dockerfile.multiarch
+          context: src/UptimeKumaRemoteProbe
+          file: src/UptimeKumaRemoteProbe/Dockerfile.multiarch
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true

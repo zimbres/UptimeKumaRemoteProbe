@@ -3,5 +3,5 @@ version: '3.9'
 services:
   worker:
     build:
-      context: ./UptimeKumaRemoteProbe
+      context: ./src/UptimeKumaRemoteProbe
       dockerfile: Dockerfile
