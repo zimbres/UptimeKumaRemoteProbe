@@ -16,6 +16,11 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     && dotnet publish "src/UptimeKumaRemoteProbe/UptimeKumaRemoteProbe.csproj" -c Release -o /app/publish -r $RID --self-contained false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	iputils-ping \
+	&& rm -rf /var/lib/apt/lists/*
+RUN chmod u+s /bin/ping
+USER $APP_UID
 WORKDIR /app
 COPY --from=build /app/publish .
 
