@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UKRP.AppHost", "src\UKRP.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UKRP.ServiceDefaults", "src\UKRP.ServiceDefaults\UKRP.ServiceDefaults.csproj", "{03B064F8-A9A3-4380-9F77-2D025C51185E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{07875E62-655F-44E9-8781-1F24DB832BA1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{03B064F8-A9A3-4380-9F77-2D025C51185E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C2CAF34-25CA-44E6-87B1-6A36456595FB}
