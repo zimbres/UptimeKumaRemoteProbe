@@ -1,7 +1,7 @@
 [![Publish](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/dotnet.yml/badge.svg?event=release)](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/dotnet.yml) [![.CodeQL](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zimbres/UptimeKumaRemoteProbe/actions/workflows/codeql-analysis.yml)
 
 
-# Uptime Kuma Remote Probe
+# Uptime Kuma Remote Probe / Push Agent
 
 >Uptime Kuma repository https://github.com/louislam/uptime-kuma
 
