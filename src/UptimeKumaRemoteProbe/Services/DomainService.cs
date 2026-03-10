@@ -3,16 +3,14 @@
 public class DomainService
 {
     private readonly ILogger<DomainService> _logger;
-    private HttpClient _httpClient;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly PushService _pushService;
     private readonly AppSettings _appSettings;
 
-    public DomainService(ILogger<DomainService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory,
+    public DomainService(ILogger<DomainService> logger, IHttpClientFactory httpClientFactory,
         PushService pushService, AppSettings appSettings)
     {
         _logger = logger;
-        _httpClient = httpClient;
         _httpClientFactory = httpClientFactory;
         _pushService = pushService;
         _appSettings = appSettings;
@@ -20,7 +18,7 @@ public class DomainService
 
     public async Task CheckDomainAsync(Endpoint endpoint)
     {
-        _httpClient = _httpClientFactory.CreateClient(endpoint.IgnoreSSL ? "IgnoreSSL" : "Default");
+        using var httpClient = _httpClientFactory.CreateClient(endpoint.IgnoreSSL ? "IgnoreSSL" : "Default");
 
         HttpResponseMessage result;
         int daysToExpire;
@@ -28,9 +26,9 @@ public class DomainService
 
         try
         {
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"TOKEN={_appSettings.WhoisApiToken}");
-            result = await _httpClient.GetAsync($"{_appSettings.WhoisApiUrl.Replace("keep.this", endpoint.Domain)}");
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"TOKEN={_appSettings.WhoisApiToken}");
+            result = await httpClient.GetAsync($"{_appSettings.WhoisApiUrl.Replace("keep.this", endpoint.Domain)}");
             var content = await result.Content.ReadAsStringAsync();
             var domain = JsonSerializer.Deserialize<Domain>(content);
 

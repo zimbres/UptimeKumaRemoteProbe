@@ -4,13 +4,11 @@ public class PushService
 {
     private readonly ILogger<PushService> _logger;
     private readonly HttpClient _httpClient;
-    private readonly IHttpClientFactory _httpClientFactory;
-    public PushService(ILogger<PushService> logger, HttpClient httpClient, IHttpClientFactory httpClientFactory)
+
+    public PushService(ILogger<PushService> logger, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
-        _httpClient = httpClient;
-        _httpClientFactory = httpClientFactory;
-        _httpClient = _httpClientFactory.CreateClient();
+        _httpClient = httpClientFactory.CreateClient();
     }
 
     public async Task PushAsync(Uri uri, long elapsedMilliseconds)
