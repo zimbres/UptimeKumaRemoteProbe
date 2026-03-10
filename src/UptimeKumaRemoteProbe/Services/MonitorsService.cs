@@ -13,9 +13,10 @@ public class MonitorsService
 
     public async Task<List<Monitors>> GetMonitorsAsync()
     {
+        SocketIOClient.SocketIO socket = null;
         try
         {
-            using var socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
+            socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
             {
                 ReconnectionAttempts = 3
             });
@@ -64,6 +65,14 @@ public class MonitorsService
         {
             _logger.LogError("Error trying to get monitors");
             return null;
+        }
+        finally
+        {
+            if (socket != null)
+            {
+                socket.Off("monitorList");
+                socket.Dispose();
+            }
         }
     }
 }
