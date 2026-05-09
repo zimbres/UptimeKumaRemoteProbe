@@ -18,7 +18,8 @@ public class MonitorsService
         {
             socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
             {
-                ReconnectionAttempts = 3
+                ReconnectionAttempts = 3,
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             });
 
             var data = new
