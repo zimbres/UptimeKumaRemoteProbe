@@ -8,7 +8,7 @@ public class PushService
     public PushService(ILogger<PushService> logger, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
-        _httpClient = httpClientFactory.CreateClient();
+        _httpClient = httpClientFactory.CreateClient("IgnoreSSL");
     }
 
     public async Task PushAsync(Uri uri, long elapsedMilliseconds)
