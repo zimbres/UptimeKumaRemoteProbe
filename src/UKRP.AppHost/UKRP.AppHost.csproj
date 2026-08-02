@@ -1,6 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -13,10 +11,6 @@
     <FileVersion>$(PackageVersion)</FileVersion>
     <Version>1.0.0.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.4.6" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UptimeKumaRemoteProbe\UptimeKumaRemoteProbe.csproj" />
