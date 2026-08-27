@@ -4,11 +4,13 @@ public class MonitorsService
 {
     private readonly ILogger<MonitorsService> _logger;
     private readonly AppSettings _appSettings;
+    private readonly WebSocketOptions _webSocketOptions;
 
-    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings)
+    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings, WebSocketOptions webSocketOptions)
     {
         _logger = logger;
         _appSettings = appSettings;
+        _webSocketOptions = webSocketOptions;
     }
 
     public async Task<List<Monitors>> GetMonitorsAsync()
@@ -16,11 +18,16 @@ public class MonitorsService
         SocketIOClient.SocketIO socket = null;
         try
         {
-            socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
-            {
-                ReconnectionAttempts = 3,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-            });
+            socket = new SocketIOClient.SocketIO(
+                new Uri(_appSettings.Url),
+                new SocketIOClient.SocketIOOptions
+                {
+                    ReconnectionAttempts = 3
+                },
+                services =>
+                {
+                    services.AddSingleton(_webSocketOptions);
+                });
 
             var data = new
             {
@@ -31,21 +38,23 @@ public class MonitorsService
 
             JsonElement monitorsRaw = new();
 
-            socket.On("monitorList", response =>
+            socket.On("monitorList", ctx =>
             {
-                monitorsRaw = response.GetValue<JsonElement>();
+                monitorsRaw = ctx.GetValue<JsonElement>(0);
+                return Task.CompletedTask;
             });
 
             socket.OnConnected += async (sender, e) =>
             {
-                await socket.EmitAsync("login", (ack) =>
+                await socket.EmitAsync("login", new object[] { data }, ack =>
                 {
                     var result = JsonNode.Parse(ack.GetValue<JsonElement>(0).ToString());
                     if (result["ok"].ToString() != "true")
                     {
                         _logger.LogError("Uptime Kuma login failure");
                     }
-                }, data);
+                    return Task.CompletedTask;
+                });
             };
 
             await socket.ConnectAsync();
@@ -69,11 +78,7 @@ public class MonitorsService
         }
         finally
         {
-            if (socket != null)
-            {
-                socket.Off("monitorList");
-                socket.Dispose();
-            }
+            socket?.Dispose();
         }
     }
 }

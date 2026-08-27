@@ -18,6 +18,10 @@ builder.Services.AddSingleton<DbService>();
 builder.Services.AddSingleton<CertificateService>();
 builder.Services.AddSingleton<MonitorsService>();
 builder.Services.AddSingleton<DomainService>();
+builder.Services.AddSingleton(new WebSocketOptions
+{
+    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+});
 builder.Services.AddHostedService<Worker>().Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
