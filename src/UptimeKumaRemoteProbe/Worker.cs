@@ -47,7 +47,7 @@ public class Worker : BackgroundService
             Environment.Exit(0);
         }
 
-        Ping ping = new();
+        using Ping ping = new();
         PingReply pingReply = null;
 
         while (!stoppingToken.IsCancellationRequested)

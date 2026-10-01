@@ -13,7 +13,7 @@ public class PingService
 
     public async Task CheckPingAsync(Endpoint endpoint)
     {
-        Ping ping = new();
+        using Ping ping = new();
         PingReply pingReply = null;
 
         try
