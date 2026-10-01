@@ -4,11 +4,13 @@ public class MonitorsService
 {
     private readonly ILogger<MonitorsService> _logger;
     private readonly AppSettings _appSettings;
+    private readonly HttpClient _httpClient;
 
-    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings)
+    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _appSettings = appSettings;
+        _httpClient = httpClientFactory.CreateClient("IgnoreSSL");
     }
 
     public async Task<List<Monitors>> GetMonitorsAsync()
@@ -74,6 +76,26 @@ public class MonitorsService
                 socket.Off("monitorList");
                 socket.Dispose();
             }
+        }
+    }
+    public async Task<List<Monitors>> GetMonitorsApiAsync()
+    {
+        try
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _appSettings.ApiToken);
+            var response = await _httpClient.GetAsync($"{_appSettings.ApiUrl}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Error trying to get monitors from API, *** {} ***", response.ReasonPhrase);
+            }
+            return response.IsSuccessStatusCode
+                ? JsonSerializer.Deserialize<List<Monitors>>(await response.Content.ReadAsStringAsync())
+                : null;
+        }
+        catch
+        {
+            _logger.LogError("Error trying to get monitors from API");
+            return null;
         }
     }
 }

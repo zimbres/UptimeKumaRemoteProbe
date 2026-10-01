@@ -13,6 +13,9 @@ public class AppSettings
     public int Delay { get; set; }
     public string WhoisApiUrl { get; set; }
     public string WhoisApiToken { get; set; }
+    public bool UseMonitorsApi { get; set; }
+    public string ApiUrl { get; set; }
+    public string ApiToken { get; set; }
 
     public AppSettings(IConfiguration configuration)
     {
@@ -29,5 +32,8 @@ public class AppSettings
         Delay = Environment.GetEnvironmentVariable("Delay") is not null && useEnv ? int.Parse(Environment.GetEnvironmentVariable("Delay")) : _configuration.Delay;
         WhoisApiUrl = Environment.GetEnvironmentVariable("WhoisApiUrl") is not null && useEnv ? Environment.GetEnvironmentVariable("WhoisApiUrl") : _configuration.WhoisApiUrl;
         WhoisApiToken = Environment.GetEnvironmentVariable("WhoisApiToken") is not null && useEnv ? Environment.GetEnvironmentVariable("WhoisApiToken") : _configuration.WhoisApiToken;
+        UseMonitorsApi = Environment.GetEnvironmentVariable("UseMonitorsApi") is not null && useEnv ? bool.Parse(Environment.GetEnvironmentVariable("UseMonitorsApi")) : _configuration.UseMonitorsApi;
+        ApiUrl = Environment.GetEnvironmentVariable("ApiUrl") is not null && useEnv ? Environment.GetEnvironmentVariable("ApiUrl") : _configuration.ApiUrl;
+        ApiToken = Environment.GetEnvironmentVariable("ApiToken") is not null && useEnv ? Environment.GetEnvironmentVariable("ApiToken") : _configuration.ApiToken;
     }
 }

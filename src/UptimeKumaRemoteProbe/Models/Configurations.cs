@@ -12,6 +12,9 @@ public class Configurations
     public int Delay { get; set; }
     public string WhoisApiUrl { get; set; }
     public string WhoisApiToken { get; set; }
+    public bool UseMonitorsApi { get; set; }
+    public string ApiUrl { get; set; } = string.Empty;
+    public string ApiToken { get; set; } = string.Empty;
 }
 
 public class Endpoint

@@ -66,7 +66,15 @@ public class Worker : BackgroundService
 
             if (pingReply?.Status == IPStatus.Success)
             {
-                var monitors = await _monitorsService.GetMonitorsAsync();
+                var monitors = new List<Monitors>();
+                if (_appSettings.UseMonitorsApi is true)
+                {
+                    monitors = await _monitorsService.GetMonitorsApiAsync();
+                }
+                else
+                {
+                    monitors = await _monitorsService.GetMonitorsAsync();
+                }
                 if (monitors is not null)
                 {
                     var endpoints = ParseEndpoints(monitors);
@@ -88,7 +96,9 @@ public class Worker : BackgroundService
 
         foreach (var monitor in monitors)
         {
-            var probe = monitor.Tags.Where(w => w.Name == "Probe").Select(s => s.Value).FirstOrDefault() == _appSettings.ProbeName;
+            var tags = monitor.Tags ?? [];
+
+            var probe = tags.FirstOrDefault(t => t.Name == "Probe")?.Value == _appSettings.ProbeName;
 
             if (probe)
             {
