@@ -88,9 +88,12 @@ public class MonitorsService
             {
                 _logger.LogError("Error trying to get monitors from API, *** {} ***", response.ReasonPhrase);
             }
-            return response.IsSuccessStatusCode
-                ? JsonSerializer.Deserialize<List<Monitors>>(await response.Content.ReadAsStringAsync())
-                : null;
+            if (response.IsSuccessStatusCode)
+            {
+                var monitorsApi = JsonSerializer.Deserialize<MonitorsApi>(await response.Content.ReadAsStringAsync());
+                return monitorsApi.Data;
+            }
+            return null;
         }
         catch
         {

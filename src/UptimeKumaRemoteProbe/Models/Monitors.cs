@@ -1,5 +1,13 @@
 ﻿namespace UptimeKumaRemoteProbe.Models;
 
+public class MonitorsApi
+{
+    [JsonPropertyName("success")]
+    public bool Success { get; set; }
+
+    [JsonPropertyName("data")]
+    public List<Monitors> Data { get; set; }
+}
 public class Monitors
 {
     [JsonPropertyName("id")]
