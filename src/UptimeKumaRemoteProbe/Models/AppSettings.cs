@@ -16,6 +16,7 @@ public class AppSettings
     public bool UseMonitorsApi { get; set; }
     public string ApiUrl { get; set; }
     public string ApiToken { get; set; }
+    public bool UptimeKumaV3 { get; set; }
 
     public AppSettings(IConfiguration configuration)
     {
@@ -35,5 +36,6 @@ public class AppSettings
         UseMonitorsApi = Environment.GetEnvironmentVariable("UseMonitorsApi") is not null && useEnv ? bool.Parse(Environment.GetEnvironmentVariable("UseMonitorsApi")) : _configuration.UseMonitorsApi;
         ApiUrl = Environment.GetEnvironmentVariable("ApiUrl") is not null && useEnv ? Environment.GetEnvironmentVariable("ApiUrl") : _configuration.ApiUrl;
         ApiToken = Environment.GetEnvironmentVariable("ApiToken") is not null && useEnv ? Environment.GetEnvironmentVariable("ApiToken") : _configuration.ApiToken;
+        UptimeKumaV3 = Environment.GetEnvironmentVariable("UptimeKumaV3") is not null && useEnv ? bool.Parse(Environment.GetEnvironmentVariable("UptimeKumaV3")) : _configuration.UptimeKumaV3;
     }
 }

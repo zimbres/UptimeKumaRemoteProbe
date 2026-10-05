@@ -9,14 +9,14 @@ public class Worker : BackgroundService
     private readonly TcpService _tcpService;
     private readonly CertificateService _certificateService;
     private readonly DbService _dbService;
-    private readonly MonitorsService _monitorsService;
+    private readonly IMonitorsService _monitorsService;
     private readonly AppSettings _appSettings;
     private readonly DomainService _domainService;
     private readonly VersionService _versionService;
     private static DateOnly lastDailyExecution;
 
     public Worker(ILogger<Worker> logger, IConfiguration configuration, AppSettings appSettings, PingService pingService, HttpService httpService,
-        TcpService tcpService, CertificateService certificateService, DbService dbService, MonitorsService monitorsService,
+        TcpService tcpService, CertificateService certificateService, DbService dbService, IMonitorsService monitorsService,
         DomainService domainService, VersionService versionService)
     {
         _logger = logger;

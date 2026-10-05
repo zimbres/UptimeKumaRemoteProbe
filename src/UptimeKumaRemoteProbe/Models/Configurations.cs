@@ -15,6 +15,7 @@ public class Configurations
     public bool UseMonitorsApi { get; set; }
     public string ApiUrl { get; set; } = string.Empty;
     public string ApiToken { get; set; } = string.Empty;
+    public bool UptimeKumaV3 { get; set; } = false;
 }
 
 public class Endpoint

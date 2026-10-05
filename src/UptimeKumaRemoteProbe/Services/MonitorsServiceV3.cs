@@ -1,16 +1,64 @@
 ﻿namespace UptimeKumaRemoteProbe.Services;
 
-public class MonitorsService : IMonitorsService
+public class MonitorsServiceV3 : IMonitorsService
 {
-    private readonly ILogger<MonitorsService> _logger;
+    private readonly ILogger<MonitorsServiceV3> _logger;
     private readonly AppSettings _appSettings;
     private readonly HttpClient _httpClient;
+    private readonly UptimeKumaSession _session;
+    private readonly SemaphoreSlim _loginLock = new(1, 1);
 
-    public MonitorsService(ILogger<MonitorsService> logger, AppSettings appSettings, IHttpClientFactory httpClientFactory)
+    public MonitorsServiceV3(ILogger<MonitorsServiceV3> logger, AppSettings appSettings, IHttpClientFactory httpClientFactory, UptimeKumaSession session)
     {
         _logger = logger;
         _appSettings = appSettings;
-        _httpClient = httpClientFactory.CreateClient("IgnoreSSL");
+        _session = session;
+        _httpClient = httpClientFactory.CreateClient("UptimeKuma");
+    }
+
+    private async Task EnsureAuthenticatedAsync()
+    {
+        var uri = new Uri(_appSettings.Url);
+
+        if (_session.IsAuthenticated(uri))
+        {
+            return;
+        }
+
+        await _loginLock.WaitAsync();
+
+        try
+        {
+            if (_session.IsAuthenticated(uri))
+            {
+                return;
+            }
+            await LoginAsync();
+        }
+        finally
+        {
+            _loginLock.Release();
+        }
+    }
+
+    private async Task LoginAsync()
+    {
+        var loginUrl = $"{_appSettings.Url.TrimEnd('/')}/api/auth/sign-in/username";
+
+        var loginData = new
+        {
+            username = _appSettings.Username,
+            password = _appSettings.Password
+        };
+
+        using var response = await _httpClient.PostAsJsonAsync(loginUrl, loginData);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Uptime Kuma login failed. Status: {StatusCode}, Body: {Body}", response.StatusCode, body);
+            return;
+        }
     }
 
     public async Task<List<Monitors>> GetMonitorsAsync()
@@ -18,18 +66,21 @@ public class MonitorsService : IMonitorsService
         SocketIOClient.SocketIO socket = null;
         try
         {
+            await EnsureAuthenticatedAsync();
+
+            var cookieHeader = _session.Cookies.GetCookieHeader(new Uri(_appSettings.Url));
+
             socket = new SocketIOClient.SocketIO(_appSettings.Url, new SocketIOClient.SocketIOOptions
             {
                 ReconnectionAttempts = 3,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                Path = "/socket.io/",
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
+                ExtraHeaders = new Dictionary<string, string>
+                {
+                    ["Cookie"] = cookieHeader
+                }
             });
-
-            var data = new
-            {
-                username = _appSettings.Username,
-                password = _appSettings.Password,
-                token = ""
-            };
 
             JsonElement monitorsRaw = new();
 
@@ -37,18 +88,6 @@ public class MonitorsService : IMonitorsService
             {
                 monitorsRaw = response.GetValue<JsonElement>();
             });
-
-            socket.OnConnected += async (sender, e) =>
-            {
-                await socket.EmitAsync("login", (ack) =>
-                {
-                    var result = JsonNode.Parse(ack.GetValue<JsonElement>(0).ToString());
-                    if (result["ok"].ToString() != "true")
-                    {
-                        _logger.LogError("Uptime Kuma login failure");
-                    }
-                }, data);
-            };
 
             await socket.ConnectAsync();
 
@@ -64,9 +103,9 @@ public class MonitorsService : IMonitorsService
             var monitors = JsonSerializer.Deserialize<Dictionary<string, Monitors>>(monitorsRaw);
             return monitors.Values.ToList();
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("Error trying to get monitors");
+            _logger.LogError(ex, "Error trying to get monitors");
             return null;
         }
         finally

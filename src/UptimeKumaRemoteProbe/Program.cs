@@ -1,6 +1,8 @@
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
+var settings = builder.Configuration.GetSection(nameof(Configurations)).Get<Configurations>()!;
+builder.Services.AddSingleton<UptimeKumaSession>();
 builder.Services.AddHttpClient("Default");
 builder.Services.AddHttpClient("IgnoreSSL")
 .ConfigurePrimaryHttpMessageHandler(() =>
@@ -10,13 +12,31 @@ builder.Services.AddHttpClient("IgnoreSSL")
         ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
     };
 });
+builder.Services.AddHttpClient("UptimeKuma")
+    .ConfigurePrimaryHttpMessageHandler(sp =>
+    {
+        var session = sp.GetRequiredService<UptimeKumaSession>();
+        return new HttpClientHandler
+        {
+            UseCookies = true,
+            CookieContainer = session.Cookies,
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        };
+    });
 builder.Services.AddSingleton<PingService>();
 builder.Services.AddSingleton<HttpService>();
 builder.Services.AddSingleton<TcpService>();
 builder.Services.AddSingleton<PushService>();
 builder.Services.AddSingleton<DbService>();
 builder.Services.AddSingleton<CertificateService>();
-builder.Services.AddSingleton<MonitorsService>();
+if (settings.UptimeKumaV3)
+{
+    builder.Services.AddSingleton<IMonitorsService, MonitorsServiceV3>();
+}
+else
+{
+    builder.Services.AddSingleton<IMonitorsService, MonitorsService>();
+}
 builder.Services.AddSingleton<DomainService>();
 builder.Services.AddHostedService<Worker>().Configure<HostOptions>(options =>
 {
