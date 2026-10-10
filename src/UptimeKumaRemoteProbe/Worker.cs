@@ -105,7 +105,7 @@ public class Worker : BackgroundService
                 hasProbeMonitor = true;
             }
 
-            if (monitor.Active && monitor.Maintenance is false && monitor.Type == "push" && probe)
+            if (monitor.Active && monitor.Maintenance is false && monitor.IsUnknown is false && monitor.Type == "push" && probe)
             {
                 var endpoint = new Endpoint
                 {

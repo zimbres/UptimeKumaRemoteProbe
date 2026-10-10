@@ -95,6 +95,9 @@ public class Monitors
     [JsonPropertyName("maintenance")]
     public bool Maintenance { get; set; }
 
+    [JsonPropertyName("isUnknown")]
+    public bool IsUnknown { get; set; }
+
     [JsonPropertyName("mqttTopic")]
     public string MqttTopic { get; set; }
 
